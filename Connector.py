@@ -42,12 +42,10 @@ def create_app():
 
             # Execute Week 2 SQL schema and view (idempotent)
             base = Path(__file__).resolve().parent
-            schema_path = base / "sql" / "schema.sql"
+
             view_path = base / "sql" / "views.sql"
             seed_min_path = base / "sql" / "seed_min.sql"
 
-            if schema_path.exists():
-                _exec_sql_from_file(schema_path)
             if view_path.exists():
                 _exec_sql_from_file(view_path)
             if seed_min_path.exists():
