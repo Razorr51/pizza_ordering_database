@@ -1,17 +1,23 @@
-CREATE OR REPLACE VIEW pizza_menu_prices AS
+-- Use your actual (singular) table names
+DROP VIEW IF EXISTS pizza_menu_view;
+
+CREATE VIEW pizza_menu_view AS
 SELECT
-  p.pizza_id                                   AS pizza_id,
-  p.pizza_name                                 AS pizza_name,
-  ROUND(SUM(i.cost) * 1.4 * 1.09, 2)           AS calculated_price,
+  p.id   AS pizza_id,
+  p.name AS pizza_name,
+  ROUND(SUM(i.cost), 2)               AS base_cost,
+  ROUND(SUM(i.cost) * 1.40 * 1.09, 2) AS final_price,  -- 40% margin + 9% VAT
   CASE
-    WHEN MIN(CASE WHEN i.is_meat = 0 AND i.is_dairy = 0 THEN 1 ELSE 0 END) = 1 THEN 1
-    ELSE 0
-  END                                          AS pizza_isvegan,
-  CASE
-    WHEN MIN(CASE WHEN i.is_meat = 0 THEN 1 ELSE 0 END) = 1 THEN 1
-    ELSE 0
-  END                                          AS pizza_isvegetarian
-FROM pizzas p
-JOIN pizza_ingredients pi ON pi.pizza_id = p.pizza_id
-JOIN ingredients i        ON i.ingredient_id = pi.ingredient_id
-GROUP BY p.pizza_id, p.pizza_name;
+    WHEN MIN(i.is_vegan) = 1 THEN 'vegan'
+    WHEN MIN(i.is_vegetarian) = 1 THEN 'vegetarian'
+    ELSE 'contains meat'
+  END AS veg_label
+FROM pizza p
+JOIN pizza_ingredient pi ON pi.pizza_id = p.id
+JOIN ingredient i        ON i.id        = pi.ingredient_id
+GROUP BY p.id, p.name;
+
+-- Optional: keep your old name working as an alias
+DROP VIEW IF EXISTS pizza_menu_prices;
+CREATE VIEW pizza_menu_prices AS
+SELECT * FROM pizza_menu_view;
