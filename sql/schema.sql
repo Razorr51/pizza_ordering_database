@@ -1,0 +1,23 @@
+
+
+CREATE TABLE IF NOT EXISTS ingredient (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE,
+  cost DECIMAL(10,2) NOT NULL,
+  is_vegan TINYINT(1) NOT NULL DEFAULT 0,
+  is_vegetarian TINYINT(1) NOT NULL DEFAULT 0,
+  CHECK (cost > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS pizza (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS pizza_ingredient (
+  pizza_id INT NOT NULL,
+  ingredient_id INT NOT NULL,
+  PRIMARY KEY (pizza_id, ingredient_id),
+  CONSTRAINT fk_pi_pizza FOREIGN KEY (pizza_id) REFERENCES pizza(id) ON DELETE CASCADE,
+  CONSTRAINT fk_pi_ingredient FOREIGN KEY (ingredient_id) REFERENCES ingredient(id) ON DELETE RESTRICT
+) ENGINE=InnoDB;
