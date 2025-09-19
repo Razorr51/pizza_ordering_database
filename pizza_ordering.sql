@@ -382,9 +382,6 @@ DROP TABLE IF EXISTS `pizzas`;
 CREATE TABLE `pizzas` (
   `pizza_id` int NOT NULL,
   `pizza_name` varchar(100) DEFAULT NULL,
-  `pizza_finalprice` decimal(10,0) DEFAULT NULL,
-  `pizza_isvegan` tinyint DEFAULT NULL,
-  `pizza_isvegetarian` tinyint DEFAULT NULL,
   PRIMARY KEY (`pizza_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -392,12 +389,6 @@ CREATE TABLE `pizzas` (
 --
 -- Dumping data for table `pizzas`
 --
-
-LOCK TABLES `pizzas` WRITE;
-/*!40000 ALTER TABLE `pizzas` DISABLE KEYS */;
-INSERT INTO `pizzas` VALUES (0,'Margherita',NULL,NULL,NULL);
-/*!40000 ALTER TABLE `pizzas` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `postcode`
