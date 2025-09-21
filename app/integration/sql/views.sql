@@ -1,4 +1,6 @@
-CREATE OR REPLACE VIEW pizza_menu_prices AS
+DROP VIEW IF EXISTS pizza_menu_prices;
+
+CREATE VIEW pizza_menu_prices AS
 SELECT
   p.pizza_id                                   AS pizza_id,
   p.pizza_name                                 AS pizza_name,
