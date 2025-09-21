@@ -1,4 +1,5 @@
 from flask import Flask
+from pathlib import Path
 from app.config.app_config import AppConfig
 
 def _register_blueprints(app):
@@ -8,29 +9,35 @@ def _register_blueprints(app):
     app.register_blueprint(menu_bp)
 
 def create_app():
-    app = Flask(__name__)
-    config = AppConfig()
+    base_app_dir  = Path(__file__).resolve().parents[1]     # .../app
+    templates_dir = base_app_dir / "templates"               # .../app/templates
+    static_dir    = base_app_dir / "static"                  # .../app/static (optional)
 
+    app = Flask(
+        __name__,
+        template_folder=str(templates_dir),
+        static_folder=str(static_dir)
+    )
+
+    config = AppConfig()
     app.config["SQLALCHEMY_DATABASE_URI"] = config.database_uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = config.track_modifications
     app.config["SQLALCHEMY_ECHO"] = config.echo
     app.config["SECRET_KEY"] = config.secret_key
 
+
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
+    app.jinja_env.auto_reload = True
+
     app.logger.info(f"Using database URL: {config.get_masked_uri()}")
 
-    # Init db first
     from app.integration.models import db
     db.init_app(app)
 
     with app.app_context():
-        # Create all tables BEFORE seeding data
         db.create_all()
-
-        # Now setup schema and seed data
         from app.integration.database_manager import DatabaseManager
-        db_manager = DatabaseManager(app)
-        db_manager.setup_schema()
-
+        DatabaseManager(app).setup_schema()
         from app.integration.models import seed_data
         seed_data()
 
@@ -39,7 +46,7 @@ def create_app():
     @app.route("/")
     def index():
         return ('<p>Pizza ordering system. Try '
-                '<a href="/menu/">/menu/</a> and '
-                '<a href="/customers/">/customers/</a>.</p>')
+                '<a href="/menu/html">/menu/html</a> and '
+                '<a href="/menu/">/menu/</a>.</p>')
 
     return app

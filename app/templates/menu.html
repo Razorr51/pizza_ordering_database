@@ -1,0 +1,104 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Alibrandi's Menu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Inline styles so you don’t need a static CSS setup -->
+  <style>
+    :root { --bg: #100704; --card: #172a4e; --text:#e8ecf4; --muted:#a7b0c3; --accent:#6ee7b7; --warn:#fbbf24; --pill:#21304d; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; background: linear-gradient(180deg,#0b1020,#0f1530); color:var(--text);}
+    .wrap { max-width:1100px; margin:32px auto; padding:0 16px; }
+    h1 { font-size:32px; margin:0 0 8px; }
+    .sub { color:var(--muted); margin-bottom:24px; }
+    .section { margin-top:28px; }
+    .category { font-size:20px; margin: 12px 0 10px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:16px; }
+    .card { background: radial-gradient(1200px 300px at 0% 0%, rgba(77,88,121,0.18), transparent), var(--card);
+            border: 1px solid rgba(100,116,139,0.2); border-radius:16px; padding:16px; box-shadow: 0 10px 25px rgba(0,0,0,0.25);}
+    .title { font-weight:600; font-size:18px; margin:0 0 4px; }
+    .muted { color:var(--muted); font-size:13px; min-height: 32px; }
+    .price { margin-top:12px; font-weight:700; font-size:18px; }
+    .pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    .pill { font-size:12px; padding:4px 10px; border-radius:999px; background:var(--pill); border:1px solid rgba(100,116,139,0.35);}
+    .veg  { border-color: rgba(110,231,183,0.8); color: var(--accent); }
+    .vege { border-color: rgba(251,191,36,0.8); color: var(--warn); }
+    .searchbar { margin: 12px 0 24px; }
+    .searchbar input { width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(100,116,139,0.35); background:#0f1629; color:var(--text); outline:none; }
+  </style>
+  <script>
+    function onSearch(e){
+      const q = e.value.toLowerCase();
+      for (const card of document.querySelectorAll('[data-item]')) {
+        const text = (card.dataset.name + " " + (card.dataset.ing || "")).toLowerCase();
+        card.style.display = text.includes(q) ? "" : "none";
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <h1>🍕 Alibrandi's Menu</h1>
+    <div class="sub">Use the search to filter.</div>
+
+    <div class="searchbar">
+      <input placeholder="Search pizzas, drinks, desserts, or ingredients…" oninput="onSearch(this)" />
+    </div>
+
+    <!-- PIZZAS -->
+    <div class="section">
+      <div class="category">Pizzas</div>
+      <div class="grid">
+        {% for p in pizzas %}
+          <div class="card" data-item data-name="{{ p.pizza_name }}" data-ing="{{ p.ingredients or '' }}">
+            <div class="title">{{ p.pizza_name }}</div>
+            <div class="muted">{{ p.ingredients or '—' }}</div>
+            <div class="pills">
+              {% if p.is_vegan %}<span class="pill veg">vegan</span>{% endif %}
+              {% if p.is_vegetarian and not p.is_vegan %}<span class="pill vege">vegetarian</span>{% endif %}
+            </div>
+            <div class="price">€ {{ '%.2f'|format(p.final_price|float) }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- DRINKS -->
+    <div class="section">
+      <div class="category">Drinks</div>
+      <div class="grid">
+        {% for d in drinks %}
+          <div class="card" data-item data-name="{{ d.name }}">
+            <div class="title">{{ d.name }}</div>
+            <div class="pills">
+              {% if d.is_vegan %}<span class="pill veg">vegan</span>{% endif %}
+              {% if d.is_vegetarian and not d.is_vegan %}<span class="pill vege">vegetarian</span>{% endif %}
+            </div>
+            <div class="price">€ {{ '%.2f'|format(d.final_price|float) }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- DESSERTS -->
+    <div class="section">
+      <div class="category">Desserts</div>
+      <div class="grid">
+        {% for d in desserts %}
+          <div class="card" data-item data-name="{{ d.name }}">
+            <div class="title">{{ d.name }}</div>
+            <div class="pills">
+              {% if d.is_vegan %}<span class="pill veg">vegan</span>{% endif %}
+              {% if d.is_vegetarian and not d.is_vegan %}<span class="pill vege">vegetarian</span>{% endif %}
+            </div>
+            <div class="price">€ {{ '%.2f'|format(d.final_price|float) }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
