@@ -1,6 +1,5 @@
 # app/presentation/controllers/customers.py
 from flask import Blueprint, jsonify, request
-from app.integration.models import db
 from app.integration.models.customer import Customer
 
 customers_bp = Blueprint("customers", __name__, url_prefix="/customers")

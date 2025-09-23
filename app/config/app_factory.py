@@ -9,9 +9,9 @@ def _register_blueprints(app):
     app.register_blueprint(menu_bp)
 
 def create_app():
-    base_app_dir  = Path(__file__).resolve().parents[1]     # .../app
-    templates_dir = base_app_dir / "templates"               # .../app/templates
-    static_dir    = base_app_dir / "static"                  # .../app/static (optional)
+    base_app_dir  = Path(__file__).resolve().parents[1]
+    templates_dir = base_app_dir / "templates"
+    static_dir    = base_app_dir / "static"
 
     app = Flask(
         __name__,

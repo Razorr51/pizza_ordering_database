@@ -15,7 +15,6 @@ class AppConfig:
     def _get_database_uri(self):
         default_mysql = "mysql+pymysql://pizza_app:Database2025!@localhost:3306/pizza_ordering"
         if os.environ.get("SQLITE_FALLBACK") == "1":
-            # Fix: Use proper SQLite URI format
             return "sqlite:///pizza_ordering.db"
         return os.environ.get("DB_URL", default_mysql)
 

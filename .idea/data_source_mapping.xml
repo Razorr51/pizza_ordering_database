@@ -3,5 +3,6 @@
   <component name="DataSourcePerFileMappings">
     <file url="file://$PROJECT_DIR$/app/integration/sql/seed_min.sql" value="9225721b-3f55-453b-9af5-c711fcc772a4" />
     <file url="file://$PROJECT_DIR$/app/integration/sql/seed_pizzas.sql" value="9225721b-3f55-453b-9af5-c711fcc772a4" />
+    <file url="file://$PROJECT_DIR$/app/integration/sql/views.sql" value="9225721b-3f55-453b-9af5-c711fcc772a4" />
   </component>
 </project>

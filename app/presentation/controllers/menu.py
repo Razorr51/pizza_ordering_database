@@ -3,14 +3,13 @@ from flask import Blueprint, jsonify, render_template, current_app, render_templ
 from app.integration.models import db
 from pathlib import Path
 
-# resolve: app/presentation/controllers -> parents[2] == app/
 TEMPLATES_DIR = Path(__file__).resolve().parents[2] / "templates"
 
 menu_bp = Blueprint(
     "menu",
     __name__,
     url_prefix="/menu",
-    template_folder=str(TEMPLATES_DIR)  # 👈 force the correct templates folder
+    template_folder=str(TEMPLATES_DIR)
 )
 
 @menu_bp.get("/")
@@ -25,7 +24,7 @@ def get_menu_json():
 
 @menu_bp.get("/html")
 def get_menu_html():
-    # DEBUG: show where Flask is looking
+    # debug show where Flask is looking
     current_app.logger.info(f"Jinja search paths: {current_app.jinja_loader.searchpath}")
     current_app.logger.info(f"Menu blueprint template_folder: {TEMPLATES_DIR}")
 
@@ -57,7 +56,6 @@ def get_menu_html():
 
     return render_template("menu.html", pizzas=pizzas, drinks=drinks, desserts=desserts)
 
-# Optional: a tiny test endpoint that doesn't use a file, to confirm routing works
 @menu_bp.get("/test")
 def menu_test():
     return render_template_string("<h1>Menu test works</h1>")
