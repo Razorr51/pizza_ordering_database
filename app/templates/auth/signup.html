@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Sign up | Mamma Mia's{% endblock %}
+
+{% block content %}
+  <h1>Create your account</h1>
+  <p class="muted">Join the Mamma Mia's family for discounts and faster checkout.</p>
+  <form action="{{ url_for('auth.signup_submit') }}" method="post" style="max-width:420px;margin-top:24px;display:grid;gap:16px;">
+    <label>
+      <span>Name</span>
+      <input type="text" name="name" value="{{ form_data.name or '' }}" required style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(148,163,184,0.4);background:#10172a;color:var(--text);" />
+      {% if form_errors and form_errors.name %}
+        <small style="color:var(--error);">{{ form_errors.name }}</small>
+      {% endif %}
+    </label>
+    <label>
+      <span>Birthdate</span>
+      <input type="date" name="birthdate" value="{{ form_data.birthdate or '' }}" required style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(148,163,184,0.4);background:#10172a;color:var(--text);" />
+      {% if form_errors and form_errors.birthdate %}
+        <small style="color:var(--error);">{{ form_errors.birthdate }}</small>
+      {% endif %}
+    </label>
+    <label>
+      <span>Email address</span>
+      <input type="email" name="email" value="{{ form_data.email or '' }}" required style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(148,163,184,0.4);background:#10172a;color:var(--text);" />
+      {% if form_errors and form_errors.email %}
+        <small style="color:var(--error);">{{ form_errors.email }}</small>
+      {% endif %}
+    </label>
+    <label>
+      <span>Phone number</span>
+      <input type="tel" name="phone_number" value="{{ form_data.phone_number or '' }}" required style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(148,163,184,0.4);background:#10172a;color:var(--text);" />
+      {% if form_errors and form_errors.phone_number %}
+        <small style="color:var(--error);">{{ form_errors.phone_number }}</small>
+      {% endif %}
+    </label>
+    <label>
+      <span>Username</span>
+      <input type="text" name="username" value="{{ form_data.username or '' }}" required style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(148,163,184,0.4);background:#10172a;color:var(--text);" />
+      {% if form_errors and form_errors.username %}
+        <small style="color:var(--error);">{{ form_errors.username }}</small>
+      {% endif %}
+    </label>
+    <label>
+      <span>Password</span>
+      <input type="password" name="password" required minlength="6" style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(148,163,184,0.4);background:#10172a;color:var(--text);" />
+      {% if form_errors and form_errors.password %}
+        <small style="color:var(--error);">{{ form_errors.password }}</small>
+      {% endif %}
+    </label>
+    <label>
+      <span>Street name</span>
+      <input type="text" name="street_name" value="{{ form_data.street_name or '' }}" required style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(148,163,184,0.4);background:#10172a;color:var(--text);" />
+      {% if form_errors and form_errors.street_name %}
+        <small style="color:var(--error);">{{ form_errors.street_name }}</small>
+      {% endif %}
+    </label>
+    <label>
+      <span>Street number</span>
+      <input type="text" name="street_number" value="{{ form_data.street_number or '' }}" required style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(148,163,184,0.4);background:#10172a;color:var(--text);" />
+      {% if form_errors and form_errors.street_number %}
+        <small style="color:var(--error);">{{ form_errors.street_number }}</small>
+      {% endif %}
+    </label>
+    <label>
+      <span>Postcode</span>
+      <input type="text" name="postcode" value="{{ form_data.postcode or '' }}" required placeholder="e.g. 1011AB" style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(148,163,184,0.4);background:#10172a;color:var(--text);text-transform:uppercase;" />
+      {% if form_errors and form_errors.postcode %}
+        <small style="color:var(--error);">{{ form_errors.postcode }}</small>
+      {% endif %}
+    </label>
+    <button type="submit" style="padding:12px 18px;border-radius:8px;border:none;background:var(--accent);color:#0f172a;font-weight:600;cursor:pointer;">Sign up</button>
+  </form>
+  <p style="margin-top:16px;">Already have an account? <a href="{{ url_for('auth.login_form') }}">Log in</a>.</p>
+{% endblock %}

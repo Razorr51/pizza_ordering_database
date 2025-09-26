@@ -279,7 +279,7 @@ CREATE TABLE `order_items` (
   `pizza_numbers` int DEFAULT NULL,
   PRIMARY KEY (`OrderItem_ID`),
   KEY `idx_order_items_order` (`Order_ID`),
-  CONSTRAINT `fk_order_items_order` FOREIGN KEY (`Order_ID`) REFERENCES `Orders` (`Order_ID`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_order_items_order` FOREIGN KEY (`Order_ID`) REFERENCES `orders` (`Order_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

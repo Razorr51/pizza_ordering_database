@@ -1,10 +1,12 @@
-from flask import Flask
+from flask import Flask, render_template
 from pathlib import Path
 from app.config.app_config import AppConfig
 
 def _register_blueprints(app):
+    from app.presentation.controllers.auth import auth_bp
     from app.presentation.controllers.customers import customers_bp
     from app.presentation.controllers.menu import menu_bp
+    app.register_blueprint(auth_bp)
     app.register_blueprint(customers_bp)
     app.register_blueprint(menu_bp)
 
@@ -45,8 +47,6 @@ def create_app():
 
     @app.route("/")
     def index():
-        return ('<p>Pizza ordering system. Try '
-                '<a href="/menu/html">/menu/html</a> and '
-                '<a href="/menu/">/menu/</a>.</p>')
+        return render_template("menu.html")
 
     return app
