@@ -1,67 +1,102 @@
-"""Menu queries.
-
-Encapsulates SQL needed to build the pizza menu views so controllers
-only see Python data structures.
-"""
+"""Menu queries expressed with the SQLAlchemy ORM."""
 from __future__ import annotations
 
-from typing import List, Mapping
+from decimal import Decimal
+from typing import Dict, List, Mapping
 
-from sqlalchemy import text
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 
 from app.integration.models import db
+from app.integration.models.menu_item import MenuItem
+from app.integration.models.pizza import Pizza, PizzaIngredient, PizzaMenuPrice
 
 
 class MenuRepository:
-    """Provides read-only access to menu-related database queries."""
-
-    _MENU_OVERVIEW_SQL = text(
-        """
-        SELECT pizza_id, pizza_name, calculated_price AS final_price,
-               pizza_isvegan AS is_vegan, pizza_isvegetarian AS is_vegetarian
-        FROM pizza_menu_prices
-        ORDER BY pizza_name
-        """
-    )
-
-    _PIZZA_DETAILS_SQL = text(
-        """
-        SELECT 
-            p.pizza_id,
-            p.pizza_name,
-            v.calculated_price AS final_price,
-            v.pizza_isvegan    AS is_vegan,
-            v.pizza_isvegetarian AS is_vegetarian,
-            GROUP_CONCAT(DISTINCT i.name ORDER BY i.name SEPARATOR ', ') AS ingredients
-        FROM pizzas p
-        JOIN pizza_menu_prices v ON v.pizza_id = p.pizza_id
-        JOIN pizza_ingredients  pi ON pi.pizza_id = p.pizza_id
-        JOIN ingredients        i  ON i.ingredient_id = pi.ingredient_id
-        GROUP BY p.pizza_id, p.pizza_name, v.calculated_price, v.pizza_isvegan, v.pizza_isvegetarian
-        ORDER BY p.pizza_name
-        """
-    )
-
-    _ACTIVE_MENU_ITEMS_SQL = text(
-        """
-        SELECT item_id, name, type, base_price AS final_price, is_vegan, is_vegetarian
-        FROM menu_items
-        WHERE active = 1
-        ORDER BY type, name
-        """
-    )
+    """Provides read-only access to menu data via ORM queries."""
 
     def fetch_menu_overview(self) -> List[Mapping[str, object]]:
-        result = db.session.execute(self._MENU_OVERVIEW_SQL).mappings().all()
-        return [dict(row) for row in result]
+        """Return a compact list of pizzas with their menu pricing."""
+        stmt = select(PizzaMenuPrice).order_by(PizzaMenuPrice.pizza_name)
+        records = db.session.execute(stmt).scalars().all()
+        return [self._serialize_menu_overview(record) for record in records]
 
     def fetch_pizza_details(self) -> List[Mapping[str, object]]:
-        result = db.session.execute(self._PIZZA_DETAILS_SQL).mappings().all()
-        return [dict(row) for row in result]
+        """Return pizzas enriched with ingredient lists and pricing details."""
+        stmt = (
+            select(Pizza)
+            .options(
+                joinedload(Pizza.menu_price),
+                joinedload(Pizza.pizza_ingredients).joinedload(PizzaIngredient.ingredient),
+            )
+            .order_by(Pizza.pizza_name)
+        )
+        pizzas = db.session.execute(stmt).scalars().unique().all()
+        return [
+            self._serialize_pizza_detail(pizza)
+            for pizza in pizzas
+            if pizza.menu_price is not None
+        ]
 
     def fetch_active_menu_items(self) -> List[Mapping[str, object]]:
-        result = db.session.execute(self._ACTIVE_MENU_ITEMS_SQL).mappings().all()
-        return [dict(row) for row in result]
+        """Return all active non-pizza menu items."""
+        stmt = (
+            select(MenuItem)
+            .where(MenuItem.active.is_(True))
+            .order_by(MenuItem.type, MenuItem.name)
+        )
+        items = db.session.execute(stmt).scalars().all()
+        return [self._serialize_menu_item(item) for item in items]
+
+    @staticmethod
+    def _serialize_menu_overview(price: PizzaMenuPrice) -> Dict[str, object]:
+        return {
+            "pizza_id": price.pizza_id,
+            "pizza_name": price.pizza_name,
+            "final_price": MenuRepository._decimal_to_float(price.calculated_price),
+            "is_vegan": MenuRepository._to_bool(price.pizza_isvegan),
+            "is_vegetarian": MenuRepository._to_bool(price.pizza_isvegetarian),
+        }
+
+    @staticmethod
+    def _serialize_pizza_detail(pizza: Pizza) -> Dict[str, object]:
+        price = pizza.menu_price
+        ingredient_names = sorted(
+            {
+                link.ingredient.name
+                for link in pizza.pizza_ingredients
+                if link.ingredient is not None
+            }
+        )
+        return {
+            "pizza_id": pizza.pizza_id,
+            "pizza_name": price.pizza_name or pizza.pizza_name,
+            "final_price": MenuRepository._decimal_to_float(price.calculated_price),
+            "is_vegan": MenuRepository._to_bool(price.pizza_isvegan),
+            "is_vegetarian": MenuRepository._to_bool(price.pizza_isvegetarian),
+            "ingredients": ", ".join(ingredient_names),
+        }
+
+    @staticmethod
+    def _serialize_menu_item(item: MenuItem) -> Dict[str, object]:
+        return {
+            "item_id": item.item_id,
+            "name": item.name,
+            "type": item.type,
+            "final_price": MenuRepository._decimal_to_float(item.base_price),
+            "is_vegan": MenuRepository._to_bool(item.is_vegan),
+            "is_vegetarian": MenuRepository._to_bool(item.is_vegetarian),
+        }
+
+    @staticmethod
+    def _decimal_to_float(value: Decimal | None) -> float | None:
+        if value is None:
+            return None
+        return float(value)
+
+    @staticmethod
+    def _to_bool(value: object) -> bool:
+        return bool(value)
 
 
 __all__ = ["MenuRepository"]

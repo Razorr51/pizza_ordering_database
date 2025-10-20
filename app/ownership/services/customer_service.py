@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from typing import Dict, List, Optional, Tuple
-from unittest.mock import right
 
 from sqlalchemy.exc import IntegrityError
 
@@ -52,21 +51,21 @@ class CustomerService:
     ) -> Tuple[Optional[Customer], Dict[str, str]]:
         errors: Dict[str, str] = {}
 
-        right_name = (name or "").strip()
-        right_username = (username or "").strip()
-        right_email = (email or "").strip()
-        right_password = password or ""
-        right_phone = (phone_number or "").strip()
-        phone_digits = "".join(ch for ch in right_phone if ch.isdigit())
-        right_street = (street_name or "").strip()
-        right_street_number = (street_number or "").strip()
-        right_postcode = "".join((postcode or "").split()).upper()
-        right_birthdate = (birthdate or "").strip()
+        clean_name = (name or "").strip()
+        clean_username = (username or "").strip()
+        clean_email = (email or "").strip()
+        clean_password = password or ""
+        clean_phone = (phone_number or "").strip()
+        phone_digits_only = "".join(ch for ch in clean_phone if ch.isdigit())
+        clean_street = (street_name or "").strip()
+        clean_street_number = (street_number or "").strip()
+        normalized_postcode = "".join((postcode or "").split()).upper()
+        clean_birthdate = (birthdate or "").strip()
 
         parsed_birthdate: Optional[date] = None
-        if right_birthdate:
+        if clean_birthdate:
             try:
-                parsed_birthdate = datetime.strptime(right_birthdate, "%d-%m-%Y").date()
+                parsed_birthdate = datetime.strptime(clean_birthdate, "%d-%m-%Y").date()
                 if parsed_birthdate > date.today():
                     errors["birthdate"] = "Birthdate cannot be in the future."
             except ValueError:
@@ -74,23 +73,23 @@ class CustomerService:
         else:
             errors["birthdate"] = "Birthdate is required."
 
-        if not right_name:
+        if not clean_name:
             errors["name"] = "Name is required."
-        if not right_username:
+        if not clean_username:
             errors["username"] = "Username is required."
-        if not right_email:
+        if not clean_email:
             errors["email"] = "Email is required."
-        if not right_password or len(right_password) < 6:
+        if not clean_password or len(clean_password) < 6:
             errors["password"] = "Password must be at least 6 characters long."
-        if not phone_digits or len(phone_digits) < 7:
+        if not phone_digits_only or len(phone_digits_only) < 7:
             errors["phone_number"] = "Phone number must include at least 7 digits."
-        if not right_street:
+        if not clean_street:
             errors["street_name"] = "Street name is required."
 
         parsed_street_number: Optional[int] = None
-        if right_street_number:
-            if right_street_number.isdigit():
-                parsed_street_number = int(right_street_number)
+        if clean_street_number:
+            if clean_street_number.isdigit():
+                parsed_street_number = int(clean_street_number)
                 if parsed_street_number <= 0:
                     errors["street_number"] = "Street number must be positive."
             else:
@@ -98,29 +97,29 @@ class CustomerService:
         else:
             errors["street_number"] = "Street number is required."
 
-        if not right_postcode:
+        if not normalized_postcode:
             errors["postcode"] = "Postcode is required."
-        elif len(right_postcode) < 4:
+        elif len(normalized_postcode) < 4:
             errors["postcode"] = "Postcode looks too short."
 
-        if right_username and self._repository.username_exists(right_username):
+        if clean_username and self._repository.username_exists(clean_username):
             errors["username"] = "Username already taken."
-        if right_email and self._repository.email_exists(right_email):
+        if clean_email and self._repository.email_exists(clean_email):
             errors["email"] = "An account with this email already exists."
 
         if errors:
             return None, errors
 
         try:
-            postcode_id_value = self._postcode_repository.get_or_create_id(right_postcode)
+            postcode_id_value = self._postcode_repository.get_or_create_id(normalized_postcode)
 
             customer = self._repository.create(
-                name=right_name,
-                username=right_username,
-                email_address=right_email,
-                password=right_password,
-                phone_number=right_phone,
-                street_name=right_street,
+                name=clean_name,
+                username=clean_username,
+                email_address=clean_email,
+                password=clean_password,
+                phone_number=clean_phone,
+                street_name=clean_street,
                 street_number=parsed_street_number,
                 postcode_id=postcode_id_value,
                 birthdate=parsed_birthdate,

@@ -33,6 +33,16 @@ VALUES
     (2, 'Lina', 1),
     (3, 'Jakob', 1);
 
+-- Delivery coverage assignments
+INSERT IGNORE INTO delivery_person_postcode (DeliveryDriver_ID, Postcode_ID)
+VALUES
+    (1, 1),
+    (1, 2),
+    (2, 2),
+    (2, 3),
+    (3, 1),
+    (3, 3);
+
 -- Customers (link to Postcode_ID)
 INSERT IGNORE INTO Customers (Customer_ID, Name, Gender, Birthdate, Postcode_ID, Street_Number, Email_Address,
 Phone_Number, Username, Password, canBirthDay, canDiscount, PizzasOrdered, Street_Name) VALUES
@@ -48,12 +58,18 @@ INSERT IGNORE INTO menu_items (
     base_price,
     is_vegan,
     is_vegetarian,
-    active,
-    created_at
+    active
 ) VALUES
-    (1, 'Cola',       'drink',   2.50, 1, 1, 1, NOW()),
-    (2, 'Water',      'drink',   1.50, 1, 1, 1, NOW()),
-    (3, 'Beer',       'drink',   3.00, 1, 1, 1, NOW()),
-    (4, 'Tiramisu',   'dessert', 4.00, 0, 1, 1, NOW()),
-    (5, 'Gelato',     'dessert', 4.50, 0, 1, 1, NOW()),
-    (6, 'ChocoPizza', 'dessert', 4.50, 0, 0, 1, NOW());
+    (1, 'Cola',       'drink',   2.50, 1, 1, 1),
+    (2, 'Water',      'drink',   1.50, 1, 1, 1),
+    (3, 'Beer',       'drink',   3.00, 1, 1, 1),
+    (4, 'Tiramisu',   'dessert', 4.00, 0, 1, 1),
+    (5, 'Gelato',     'dessert', 4.50, 0, 1, 1),
+    (6, 'ChocoPizza', 'dessert', 4.50, 0, 0, 1);
+
+-- Discount codes
+INSERT IGNORE INTO discount_code (code, Discount_Value, is_active, valid_from, valid_to)
+VALUES
+    ('WELCOME10', 10.00, 1, '2025-01-01', '2025-12-31'),
+    ('FREEDRINK', 5.00, 1, '2025-01-01', '2025-06-30'),
+    ('BIRTHDAYBONUS', 15.00, 1, NULL, NULL);

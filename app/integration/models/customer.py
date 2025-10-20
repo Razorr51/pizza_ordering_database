@@ -1,3 +1,5 @@
+from sqlalchemy.orm import relationship
+
 from . import db
 
 class Customer(db.Model):
@@ -17,5 +19,7 @@ class Customer(db.Model):
     can_discount = db.Column("canDiscount", db.Boolean, default=False, nullable=False)
     pizzas_ordered = db.Column("PizzasOrdered", db.Integer, default=0, nullable=False)
     street_name = db.Column("Street_Name", db.String(255))
+
+    orders = relationship("Order", back_populates="customer", lazy="selectin")
     def __repr__(self):
         return f"<Customer {self.username}>"

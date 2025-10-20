@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, session, url_for
 from pathlib import Path
 from app.config.app_config import AppConfig
 
@@ -6,9 +6,11 @@ def _register_blueprints(app):
     from app.presentation.controllers.auth import auth_bp
     from app.presentation.controllers.customers import customers_bp
     from app.presentation.controllers.menu import menu_bp
+    from app.presentation.controllers.orders import orders_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(customers_bp)
     app.register_blueprint(menu_bp)
+    app.register_blueprint(orders_bp)
 
 def create_app():
     base_app_dir  = Path(__file__).resolve().parents[1]
@@ -47,6 +49,8 @@ def create_app():
 
     @app.route("/")
     def index():
-        return render_template("menu.html")
+        if session.get("customer_id"):
+            return redirect(url_for("menu.get_menu_html"))
+        return render_template("auth/landing.html")
 
     return app

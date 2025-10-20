@@ -23,6 +23,11 @@ class CustomerRepository:
             return None
         return Customer.query.filter_by(username=username).first()
 
+    def get_by_id(self, customer_id: int) -> Optional[Customer]:
+        if not customer_id:
+            return None
+        return Customer.query.filter_by(customer_id=customer_id).first()
+
     def username_exists(self, username: str) -> bool:
         if not username:
             return False

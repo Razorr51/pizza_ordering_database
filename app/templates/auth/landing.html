@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome | Mamma Mia's{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .landing-wrap { max-width: 720px; margin: 48px auto; padding: 0 16px; text-align: center; }
+    h1 { font-size: 34px; margin-bottom: 12px; }
+    .lead { color: var(--muted); margin-bottom: 32px; font-size: 16px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+    .actions a { display: inline-flex; align-items: center; justify-content: center; padding: 14px 24px; border-radius: 10px; font-weight: 600; text-decoration: none; }
+    .primary { background: linear-gradient(135deg,#22c55e,#3b82f6); color: white; }
+    .secondary { border: 1px solid rgba(148,163,184,0.4); color: var(--text); background: rgba(100,116,139,0.15); }
+    .preview { margin-top: 40px; color: var(--muted); font-size: 14px; }
+    .preview a { color: var(--accent); text-decoration: underline; }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="landing-wrap">
+    <h1>Benvenuti a Mamma Mia's!</h1>
+    <p class="lead">Log in to continue your order, or create an account to unlock discounts, faster checkout.</p>
+    <div class="actions">
+      <a class="primary" href="{{ url_for('auth.login_form') }}">Log in</a>
+      <a class="secondary" href="{{ url_for('auth.signup_form') }}">Create an account</a>
+    </div>
+    <p class="preview">Just looking? You can always <a href="{{ url_for('menu.get_menu_html') }}">browse the menu</a> first.</p>
+  </div>
+{% endblock %}
