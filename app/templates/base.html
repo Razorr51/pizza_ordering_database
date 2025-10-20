@@ -39,6 +39,7 @@
             <div><a href="{{ url_for('menu.get_menu_html') }}">🍕 Mamma Mia's</a></div>
             <div class="nav-links">
                 <a href="{{ url_for('menu.get_menu_html') }}">Menu</a>
+                <a href="{{ url_for('reports.dashboard') }}">Reports</a>
                 {% if session.get('customer_id') %}
                     <span>Hi, {{ session.get('customer_name') }}!</span>
                     <form action="{{ url_for('auth.logout') }}" method="post" style="margin:0;">

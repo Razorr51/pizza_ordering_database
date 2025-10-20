@@ -1,0 +1,111 @@
+-- Sample orders and order items to support reporting and demo scenarios.
+
+INSERT IGNORE INTO orders (
+    Order_ID,
+    Customer_ID,
+    Delivery_Postcode_ID,
+    DeliveryDriver_ID,
+    DiscountCode_ID,
+    Order_Status,
+    Placed_At,
+    Loyalty_Discount_Applied,
+    Birthday_Pizza_Applied,
+    Birthday_Drink_Applied,
+    Notes
+) VALUES
+    (1,  1,  1, 1, NULL, 'delivered', '2025-02-15 18:10:00', 0, 0, 0, 'Dinner for the family'),
+    (2,  2,  2, 2, 1,    'delivered', '2025-02-20 19:15:00', 0, 0, 0, 'Used welcome discount'),
+    (3, 10,  4, 2, NULL, 'delivered', '2025-01-05 17:45:00', 0, 1, 1, 'Birthday celebration'),
+    (4,  5,  5, 3, NULL, 'delivered', '2025-03-10 19:10:00', 1, 0, 0, 'Loyalty discount applied'),
+    (5,  7,  1, 1, 4,    'delivered', '2025-03-11 20:05:00', 0, 0, 0, 'Late night order'),
+    (6,  8,  2, 2, NULL, 'preparing', '2025-03-12 18:30:00', 0, 0, 0, 'Preparing in kitchen'),
+    (7,  9,  3, 3, NULL, 'dispatched','2025-03-12 19:05:00', 0, 0, 0, 'On the road'),
+    (8,  2,  2, 1, NULL, 'delivered', '2025-03-13 18:50:00', 0, 0, 0, 'Family treat'),
+    (9,  3,  3, 3, NULL, 'delivered', '2025-03-14 12:15:00', 0, 0, 0, 'Lunch special'),
+    (10, 4,  4, 2, NULL, 'delivered', '2025-03-15 17:40:00', 0, 0, 0, 'Extra pepperoni please'),
+    (11,11,  5, 3, NULL, 'new',       '2025-03-16 16:05:00', 0, 0, 0, 'Awaiting confirmation'),
+    (12,12,  6, 1, 3,    'delivered', '2025-03-17 20:25:00', 0, 0, 0, 'Evening dessert run'),
+    (13, 6,  6, 1, 5,    'delivered', '2025-03-18 18:55:00', 0, 0, 0, 'Spring special'),
+    (14, 1,  1, 1, NULL, 'delivered', '2025-03-19 19:45:00', 0, 0, 0, 'Trying the Italian'),
+    (15, 5,  5, 3, NULL, 'dispatched','2025-03-20 20:15:00', 0, 0, 0, 'Driver en route'),
+    (16, 7,  1, 1, NULL, 'delivered', '2025-02-25 21:00:00', 0, 0, 0, 'Mixed favourites'),
+    (17, 8,  2, 2, NULL, 'delivered', '2025-02-28 18:05:00', 0, 0, 0, 'Veggie night'),
+    (18, 9,  3, 3, NULL, 'delivered', '2025-03-02 19:30:00', 0, 0, 0, 'Spicy cravings'),
+    (19, 4,  4, 2, NULL, 'delivered', '2025-03-07 18:40:00', 0, 0, 0, 'Pre-movie meal'),
+    (20, 3,  3, 3, 2,    'delivered', '2025-03-22 21:10:00', 0, 0, 0, 'Free drink promo');
+
+INSERT IGNORE INTO order_items (
+    OrderItem_ID,
+    Order_ID,
+    Item_Type,
+    Pizza_ID,
+    MenuItem_ID,
+    Description,
+    Quantity,
+    Unit_Price,
+    Discount_Amount
+) VALUES
+    (1,  1, 'pizza',   1, NULL, 'Margherita', 2, 1.83, 0.00),
+    (2,  2, 'pizza',   2, NULL, 'Pepperoni',  1, 3.05, 0.56),
+    (3,  2, 'drink',  NULL, 1, 'Cola',       1, 2.50, 0.00),
+    (4,  3, 'pizza',   4, NULL, 'Vegetarian', 1, 4.43, 4.43),
+    (5,  3, 'drink',  NULL, 2, 'Water',      1, 1.50, 1.50),
+    (6,  4, 'pizza',   8, NULL, 'BBQ Chicken',1, 5.34, 0.78),
+    (7,  4, 'drink',  NULL, 1, 'Cola',       1, 2.50, 0.00),
+    (8,  5, 'pizza',   9, NULL, 'Hot honey pepperoni', 2, 3.36, 1.91),
+    (9,  5, 'drink',  NULL, 3, 'Beer',       2, 3.00, 0.00),
+    (10, 6, 'pizza',   4, NULL, 'Vegetarian', 1, 4.43, 0.00),
+    (11, 6, 'dessert', NULL, 5, 'Gelato',    1, 4.50, 0.00),
+    (12, 7, 'pizza',   5, NULL, 'Diavola',   1, 4.43, 0.00),
+    (13, 7, 'drink',  NULL, 1, 'Cola',       1, 2.50, 0.00),
+    (14, 8, 'pizza',   6, NULL, 'Hawaiian',  1, 3.66, 0.00),
+    (15, 8, 'dessert', NULL, 4, 'Tiramisu',  1, 4.00, 0.00),
+    (16, 9, 'pizza',   1, NULL, 'Margherita',1, 1.83, 0.00),
+    (17, 9, 'drink',  NULL, 2, 'Water',      1, 1.50, 0.00),
+    (18,10, 'pizza',   2, NULL, 'Pepperoni', 2, 3.05, 0.00),
+    (19,10, 'drink',  NULL, 3, 'Beer',       1, 3.00, 0.00),
+    (20,11, 'pizza',   7, NULL, 'Special',   1, 3.66, 0.00),
+    (21,11, 'drink',  NULL, 3, 'Beer',       1, 3.00, 0.00),
+    (22,12, 'pizza',   4, NULL, 'Vegetarian',1, 4.43, 1.34),
+    (23,12, 'dessert', NULL, 6, 'ChocoPizza',1, 4.50, 0.00),
+    (24,13, 'pizza',   10,NULL, 'Cheese',    1, 2.75, 0.00),
+    (25,13, 'drink',  NULL, 1, 'Cola',       1, 2.50, 0.26),
+    (26,14, 'pizza',   3, NULL, 'Italian',   1, 3.82, 0.00),
+    (27,14, 'dessert', NULL, 5, 'Gelato',    1, 4.50, 0.00),
+    (28,15, 'pizza',   8, NULL, 'BBQ Chicken',1,5.34, 0.00),
+    (29,15, 'drink',  NULL, 3, 'Beer',       1, 3.00, 0.00),
+    (30,16, 'pizza',   9, NULL, 'Hot honey pepperoni',1,3.36,0.00),
+    (31,16, 'pizza',   2, NULL, 'Pepperoni', 1, 3.05, 0.00),
+    (32,17, 'pizza',   4, NULL, 'Vegetarian',1, 4.43, 0.00),
+    (33,17, 'drink',  NULL, 2, 'Water',      1, 1.50, 0.00),
+    (34,18, 'pizza',   5, NULL, 'Diavola',   2, 4.43, 0.00),
+    (35,19, 'pizza',   7, NULL, 'Special',   1, 3.66, 0.00),
+    (36,19, 'dessert', NULL, 4, 'Tiramisu',  1, 4.00, 0.00),
+    (37,20, 'pizza',   2, NULL, 'Pepperoni', 1, 3.05, 0.00),
+    (38,20, 'drink',  NULL, 1, 'Cola',       1, 2.50, 2.50);
+
+-- Reflect redeemed discount codes in the seed data.
+UPDATE discount_code
+SET is_active = 0,
+    redeemed_at = '2025-02-20 19:20:00'
+WHERE code = 'WELCOME10';
+
+UPDATE discount_code
+SET is_active = 0,
+    redeemed_at = '2025-03-11 20:10:00'
+WHERE code = 'LOYALTY15';
+
+UPDATE discount_code
+SET is_active = 0,
+    redeemed_at = '2025-03-17 20:30:00'
+WHERE code = 'BIRTHDAYBONUS';
+
+UPDATE discount_code
+SET is_active = 0,
+    redeemed_at = '2025-03-18 19:00:00'
+WHERE code = 'SPRING5';
+
+UPDATE discount_code
+SET is_active = 0,
+    redeemed_at = '2025-03-22 21:15:00'
+WHERE code = 'FREEDRINK';

@@ -12,6 +12,9 @@ class Ingredient(db.Model):
     """Represents a single ingredient that can be used on pizzas."""
 
     __tablename__ = "ingredients"
+    __table_args__ = (
+        db.CheckConstraint("cost > 0", name="ck_ingredient_cost_positive"),
+    )
 
     ingredient_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(db.String(100), nullable=False, unique=True)

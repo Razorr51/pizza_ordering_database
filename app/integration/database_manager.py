@@ -25,15 +25,18 @@ class DatabaseManager:
             view_path = sql_dir / "views.sql"
             seed_path = sql_dir / "seed_min.sql"
             pizza_seed_path = sql_dir / "seed_pizzas.sql"
+            orders_seed_path = sql_dir / "seed_orders.sql"
+            self._drop_reporting_views()
+            self._rebuild_order_tables()
+            self._sync_discount_table()
             if view_path.exists():
-                self._drop_menu_price_table()
                 self.execute_sql_file(view_path)
             if seed_path.exists():
                 self.execute_sql_file(seed_path)
             if pizza_seed_path.exists():
                 self.execute_sql_file(pizza_seed_path)
-            self._rebuild_order_tables()
-            self._sync_discount_table()
+            if orders_seed_path.exists():
+                self.execute_sql_file(orders_seed_path)
         except OperationalError as e:
             self.app.logger.error("Database setup failed: %s", e)
             raise
@@ -47,18 +50,38 @@ class DatabaseManager:
         )
 
     def _drop_menu_price_table(self) -> None:
+        try:
+            db.session.execute(text("DROP VIEW IF EXISTS pizza_menu_prices"))
+            db.session.commit()
+        except OperationalError:
+            db.session.rollback()
+        try:
+            db.session.execute(text("DROP TABLE IF EXISTS pizza_menu_prices"))
+            db.session.commit()
+        except OperationalError:
+            db.session.rollback()
+
+    def _drop_reporting_views(self) -> None:
         inspector = inspect(db.engine)
-        if inspector.has_table("pizza_menu_prices"):
-            try:
-                db.session.execute(text("DROP VIEW IF EXISTS pizza_menu_prices"))
-                db.session.commit()
-            except OperationalError:
-                db.session.rollback()
-            try:
-                db.session.execute(text("DROP TABLE IF EXISTS pizza_menu_prices"))
-                db.session.commit()
-            except OperationalError:
-                db.session.rollback()
+        existing_views = set(inspector.get_view_names()) if hasattr(inspector, "get_view_names") else set()
+
+        targets = [
+            "staff_undelivered_orders",
+            "staff_top_pizzas_last_month",
+            "staff_monthly_earnings_by_gender",
+            "staff_monthly_earnings_by_age_group",
+            "staff_monthly_earnings_by_postcode",
+            "pizza_menu_prices",
+        ]
+        for view in targets:
+            if view in existing_views:
+                try:
+                    db.session.execute(text(f"DROP VIEW IF EXISTS {view}"))
+                    db.session.commit()
+                except OperationalError:
+                    db.session.rollback()
+        # Drop any lingering compatibility table created for pizza_menu_prices
+        self._drop_menu_price_table()
 
     def _rebuild_order_tables(self) -> None:
         from app.integration.models.order import Order, OrderItem

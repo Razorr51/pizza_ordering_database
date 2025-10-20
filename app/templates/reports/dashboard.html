@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Reports | Mamma Mia's{% endblock %}
+
+{% block head_styles %}
+  <style>
+    .reports-wrap { max-width: 1080px; margin: 32px auto; padding: 0 16px; }
+    h1 { margin: 0 0 24px; }
+    h2 { margin-top: 32px; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(148,163,184,0.25); }
+    th { background: rgba(37, 99, 235, 0.12); font-weight: 600; }
+    tbody tr:nth-child(even) { background: rgba(15, 23, 42, 0.25); }
+    .pill { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 12px; background: rgba(37, 99, 235, 0.2); }
+    .filters { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; }
+    .filters input { padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(148,163,184,0.4); background: #10172a; color: var(--text); width: 110px; }
+    .filters button { padding: 8px 14px; border-radius: 6px; border: none; background: var(--accent); color: #0f172a; font-weight: 600; cursor: pointer; }
+    .badge { font-size: 12px; color: var(--muted); }
+    .grid { display: grid; gap: 24px; }
+    @media (min-width: 960px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="reports-wrap">
+    <h1>Staff Insights</h1>
+    <p class="muted">Live overview of deliveries, top performers, and monthly earnings. Data updates automatically from SQL views.</p>
+
+    <section>
+      <h2>Undelivered Orders</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th>Driver</th>
+            <th>Placed At</th>
+            <th>Minutes</th>
+            <th>Items</th>
+            <th>Total (€)</th>
+          </tr>
+        </thead>
+        <tbody id="undelivered-table">
+          {% for order in undelivered %}
+            <tr>
+              <td>#{{ order.order_id }}</td>
+              <td>{{ order.customer_name }}<br><span class="badge">{{ order.delivery_postcode or '—' }}</span></td>
+              <td>{{ order.order_status|capitalize }}</td>
+              <td>{{ order.driver_name or 'Unassigned' }}</td>
+              <td>{{ order.placed_at }}</td>
+              <td>{{ order.minutes_since_placed }}</td>
+              <td>{{ order.item_count }}</td>
+              <td>{{ '%.2f'|format(order.order_value|float) }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="8">All orders delivered. 🍕</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="grid">
+      <div>
+        <h2>Top Pizzas (Last 30 Days)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Pizza</th>
+              <th>Sold</th>
+              <th>Revenue (€)</th>
+            </tr>
+          </thead>
+          <tbody id="top-pizzas-table">
+            {% for pizza in top_pizzas %}
+              <tr>
+                <td>{{ pizza.popularity_rank }}</td>
+                <td>{{ pizza.pizza_name }}</td>
+                <td>{{ pizza.total_quantity }}</td>
+                <td>{{ '%.2f'|format(pizza.pizza_revenue|float) }}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="4">Not enough data yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <h2>Monthly Earnings</h2>
+        <div class="filters">
+          <label>
+            <span class="badge">Year</span><br>
+            <input type="number" id="earnings-year" min="2020" max="2100" value="{{ earnings.period.year }}">
+          </label>
+          <label>
+            <span class="badge">Month</span><br>
+            <input type="number" id="earnings-month" min="1" max="12" value="{{ earnings.period.month }}">
+          </label>
+          <button type="button" onclick="reloadEarnings()">Update</button>
+        </div>
+        <h3>By Gender</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Gender</th>
+              <th>Orders</th>
+              <th>Revenue (€)</th>
+            </tr>
+          </thead>
+          <tbody id="earnings-gender">
+            {% for row in earnings.by_gender %}
+              <tr>
+                <td>{{ row.gender }}</td>
+                <td>{{ row.order_count }}</td>
+                <td>{{ '%.2f'|format(row.revenue|float) }}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="3">No orders in this period.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <h3>By Age Group</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Age Group</th>
+              <th>Orders</th>
+              <th>Revenue (€)</th>
+            </tr>
+          </thead>
+          <tbody id="earnings-age">
+            {% for row in earnings.by_age_group %}
+              <tr>
+                <td>{{ row.age_group }}</td>
+                <td>{{ row.order_count }}</td>
+                <td>{{ '%.2f'|format(row.revenue|float) }}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="3">No orders in this period.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <h3>By Postcode</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Postcode</th>
+              <th>Orders</th>
+              <th>Revenue (€)</th>
+            </tr>
+          </thead>
+          <tbody id="earnings-postcode">
+            {% for row in earnings.by_postcode %}
+              <tr>
+                <td>{{ row.postcode or 'Unknown' }}</td>
+                <td>{{ row.order_count }}</td>
+                <td>{{ '%.2f'|format(row.revenue|float) }}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="3">No orders in this period.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function formatCurrency(value){
+      return Number(value || 0).toFixed(2);
+    }
+
+    function renderRows(targetId, rows, columns, emptyMessage){
+      const tbody = document.getElementById(targetId);
+      tbody.innerHTML = '';
+      if(!rows || rows.length === 0){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = columns;
+        td.textContent = emptyMessage;
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach(value => {
+          const td = document.createElement('td');
+          td.innerHTML = value;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function reloadEarnings(){
+      const year = Number(document.getElementById('earnings-year').value);
+      const month = Number(document.getElementById('earnings-month').value);
+      const params = new URLSearchParams();
+      if(year){ params.append('year', year); }
+      if(month){ params.append('month', month); }
+      const response = await fetch(`/reports/earnings?${params.toString()}`);
+      const data = await response.json();
+      renderRows('earnings-gender', data.by_gender.map(r => [
+        r.gender,
+        r.order_count,
+        formatCurrency(r.revenue)
+      ]), 3, 'No orders in this period.');
+      renderRows('earnings-age', data.by_age_group.map(r => [
+        r.age_group,
+        r.order_count,
+        formatCurrency(r.revenue)
+      ]), 3, 'No orders in this period.');
+      renderRows('earnings-postcode', data.by_postcode.map(r => [
+        r.postcode || 'Unknown',
+        r.order_count,
+        formatCurrency(r.revenue)
+      ]), 3, 'No orders in this period.');
+    }
+
+    async function refreshUndelivered(){
+      const response = await fetch('/reports/undelivered');
+      const data = await response.json();
+      renderRows('undelivered-table', data.orders.map(order => [
+        `#${order.order_id}`,
+        `${order.customer_name}<br><span class="badge">${order.delivery_postcode || '—'}</span>`,
+        order.order_status.charAt(0).toUpperCase() + order.order_status.slice(1),
+        order.driver_name || 'Unassigned',
+        order.placed_at,
+        order.minutes_since_placed,
+        order.item_count,
+        formatCurrency(order.order_value)
+      ]), 8, 'All orders delivered. 🍕');
+    }
+
+    async function refreshTopPizzas(){
+      const response = await fetch('/reports/top-pizzas');
+      const data = await response.json();
+      renderRows('top-pizzas-table', data.pizzas.map(pizza => [
+        pizza.popularity_rank,
+        pizza.pizza_name,
+        pizza.total_quantity,
+        formatCurrency(pizza.pizza_revenue)
+      ]), 4, 'Not enough data yet.');
+    }
+
+    setInterval(refreshUndelivered, 60000);
+    setInterval(refreshTopPizzas, 60000);
+  </script>
+{% endblock %}

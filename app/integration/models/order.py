@@ -15,6 +15,12 @@ class Order(db.Model):
     """Represents a customer's purchase order."""
 
     __tablename__ = "orders"
+    __table_args__ = (
+        db.CheckConstraint(
+            "Order_Status IN ('new','preparing','dispatched','delivered','failed')",
+            name="ck_order_status_valid",
+        ),
+    )
 
     order_id: Mapped[int] = mapped_column(
         "Order_ID", primary_key=True, autoincrement=True
@@ -117,6 +123,11 @@ class OrderItem(db.Model):
     """Line items for orders, covering pizzas and optional extras."""
 
     __tablename__ = "order_items"
+    __table_args__ = (
+        db.CheckConstraint("Quantity > 0", name="ck_order_item_quantity_positive"),
+        db.CheckConstraint("Unit_Price >= 0", name="ck_order_item_price_non_negative"),
+        db.CheckConstraint("Discount_Amount >= 0", name="ck_order_item_discount_non_negative"),
+    )
 
     order_item_id: Mapped[int] = mapped_column(
         "OrderItem_ID", primary_key=True, autoincrement=True

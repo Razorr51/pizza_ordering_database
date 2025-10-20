@@ -7,10 +7,12 @@ def _register_blueprints(app):
     from app.presentation.controllers.customers import customers_bp
     from app.presentation.controllers.menu import menu_bp
     from app.presentation.controllers.orders import orders_bp
+    from app.presentation.controllers.reports import reports_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(customers_bp)
     app.register_blueprint(menu_bp)
     app.register_blueprint(orders_bp)
+    app.register_blueprint(reports_bp)
 
 def create_app():
     base_app_dir  = Path(__file__).resolve().parents[1]

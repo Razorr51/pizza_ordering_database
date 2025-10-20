@@ -24,6 +24,10 @@ class OrderRequestItem:
     quantity: int
 
 
+class NoDriverAvailableError(RuntimeError):
+    """Internal signal raised when no delivery driver can accept an order."""
+
+
 class OrderService:
     """Handles placing orders, applying discounts, and assigning drivers."""
 
@@ -90,71 +94,77 @@ class OrderService:
             return None, errors
 
         total_pizza_count = sum(qty for _, qty in pizza_lines)
-
-        order = self._orders.create_blank_order(
-            customer_id=customer.customer_id,
-            delivery_postcode_id=customer.postcode_id,
-            notes=notes,
-        )
-
-        for pizza, quantity in pizza_lines:
-            menu_price = pizza.menu_price
-            assert menu_price is not None  # ensured in _load_pizza_lines
-            self._orders.add_pizza_item(
-                order,
-                pizza=pizza,
-                quantity=quantity,
-                unit_price=menu_price.calculated_price,
-            )
-
-        for menu_item, quantity in drink_lines + dessert_lines:
-            self._orders.add_menu_item(
-                order,
-                menu_item=menu_item,
-                quantity=quantity,
-                unit_price=menu_item.base_price or Decimal("0"),
-            )
-
-        # Birthday freebies (cheapest pizza + drink)
-        self._apply_birthday_rewards(order, customer, requested_at.date())
-
-        # Loyalty discount (10% off once customer hit threshold)
-        if customer.pizzas_ordered >= self.LOYALTY_THRESHOLD:
-            self._apply_order_level_discount(order, self.LOYALTY_DISCOUNT)
-            order.loyalty_discount_applied = True
-
-        # Additional discount code
-        if discount:
-            order.discount_code = discount
-            discount_amount = self._calculate_percentage_discount(order, discount.discount_multiplier())
-            if discount_amount > Decimal("0"):
-                self._apply_explicit_discount_amount(order, discount_amount)
-
-        order.recalculate_totals()
-
-        # Assign delivery driver
-        assigned_driver = self._delivery.find_available_driver(
-            customer.postcode_id,
-            reference_time=requested_at,
-        )
-        if not assigned_driver:
-            errors["delivery"] = "No delivery driver is available for the requested postcode at this time."
-            db.session.rollback()
-            return None, errors
-
-        cooldown_until = requested_at + timedelta(minutes=self.DRIVER_COOLDOWN_MINUTES)
-        assigned_driver.unavailable_until = cooldown_until
-        assigned_driver.is_available = False
-        order.delivery_person = assigned_driver
-
-        # Loyalty tracking: add purchased pizza count
-        customer.pizzas_ordered = (customer.pizzas_ordered or 0) + total_pizza_count
+        order: Optional[Order] = None
 
         try:
-            if discount:
-                self._discounts.mark_redeemed(discount)
-            order.recalculate_totals()
+            session = db.session
+            with session.begin_nested():
+                order = self._orders.create_blank_order(
+                    customer_id=customer.customer_id,
+                    delivery_postcode_id=customer.postcode_id,
+                    notes=notes,
+                )
+
+                for pizza, quantity in pizza_lines:
+                    menu_price = pizza.menu_price
+                    assert menu_price is not None  # ensured in _load_pizza_lines
+                    self._orders.add_pizza_item(
+                        order,
+                        pizza=pizza,
+                        quantity=quantity,
+                        unit_price=menu_price.calculated_price,
+                    )
+
+                for menu_item, quantity in drink_lines + dessert_lines:
+                    self._orders.add_menu_item(
+                        order,
+                        menu_item=menu_item,
+                        quantity=quantity,
+                        unit_price=menu_item.base_price or Decimal("0"),
+                    )
+
+                # Birthday freebies (cheapest pizza + drink)
+                self._apply_birthday_rewards(order, customer, requested_at.date())
+
+                # Loyalty discount (10% off once customer hit threshold)
+                if customer.pizzas_ordered >= self.LOYALTY_THRESHOLD:
+                    self._apply_order_level_discount(order, self.LOYALTY_DISCOUNT)
+                    order.loyalty_discount_applied = True
+
+                # Additional discount code
+                if discount:
+                    order.discount_code = discount
+                    discount_amount = self._calculate_percentage_discount(order, discount.discount_multiplier())
+                    if discount_amount > Decimal("0"):
+                        self._apply_explicit_discount_amount(order, discount_amount)
+
+                order.recalculate_totals()
+
+                assigned_driver = self._delivery.find_available_driver(
+                    customer.postcode_id,
+                    reference_time=requested_at,
+                )
+                if not assigned_driver:
+                    raise NoDriverAvailableError()
+
+                cooldown_until = requested_at + timedelta(minutes=self.DRIVER_COOLDOWN_MINUTES)
+                assigned_driver.unavailable_until = cooldown_until
+                assigned_driver.is_available = False
+                order.delivery_person = assigned_driver
+
+                # Loyalty tracking: add purchased pizza count
+                customer.pizzas_ordered = (customer.pizzas_ordered or 0) + total_pizza_count
+
+                if discount:
+                    self._discounts.mark_redeemed(discount)
+
+                order.recalculate_totals()
+
             db.session.commit()
+        except NoDriverAvailableError:
+            db.session.rollback()
+            errors["delivery"] = "No delivery driver is available for the requested postcode at this time."
+            return None, errors
         except IntegrityError:
             db.session.rollback()
             errors["database"] = "Could not persist the order due to a database constraint."
@@ -162,6 +172,9 @@ class OrderService:
         except Exception:
             db.session.rollback()
             raise
+
+        if order is None:
+            raise RuntimeError("Order transaction completed without creating an order record.")
 
         return order, {}
 

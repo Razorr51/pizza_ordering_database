@@ -40,6 +40,9 @@ class PizzaIngredient(db.Model):
     """Association record linking pizzas to their ingredients."""
 
     __tablename__ = "pizza_ingredients"
+    __table_args__ = (
+        db.CheckConstraint("quantity > 0", name="ck_pizza_ingredient_quantity_positive"),
+    )
 
     pizza_id: Mapped[int] = mapped_column(
         ForeignKey("pizzas.pizza_id", ondelete="CASCADE"),

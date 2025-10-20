@@ -24,7 +24,10 @@ INSERT IGNORE INTO postcode (postcode_id, postcode, DeliveryDriver_ID)
 VALUES
     (1, '1000', NULL),
     (2, '1001', NULL),
-    (3, '1002', NULL);
+    (3, '1002', NULL),
+    (4, '1003', NULL),
+    (5, '1004', NULL),
+    (6, '1005', NULL);
 
 -- Delivery drivers
 INSERT IGNORE INTO delivery_person (DeliveryDriver_ID, DeliveryDriver_Name, isAvailable)
@@ -40,15 +43,27 @@ VALUES
     (1, 2),
     (2, 2),
     (2, 3),
+    (2, 4),
     (3, 1),
-    (3, 3);
+    (3, 3),
+    (3, 5),
+    (1, 6);
 
 -- Customers (link to Postcode_ID)
 INSERT IGNORE INTO Customers (Customer_ID, Name, Gender, Birthdate, Postcode_ID, Street_Number, Email_Address,
 Phone_Number, Username, Password, canBirthDay, canDiscount, PizzasOrdered, Street_Name) VALUES
-    (1, 'Alice Rossi', 'F', '1998-05-10', 1, 12, 'alice@example.com', '+31000000001', 'alice', 'x', 1, 1, 0, 'Main St'),
-    (2, 'Bob Smith',  'M', '1987-03-22', 2, 45, 'bob@example.com',   '+31000000002', 'bob',   'x', 1, 1, 0, 'Side St'),
-    (3, 'Carla Gómez','F', '1995-12-01', 3, 78, 'carla@example.com', '+31000000003', 'carla', 'x', 1, 1, 0, 'Park Ave');
+    (1,  'Alice Rossi',     'F', '1998-05-10', 1, 12, 'alice@example.com',  '+31000000001', 'alice',    'x', 1, 1, 4, 'Main St'),
+    (2,  'Bob Smith',       'M', '1987-03-22', 2, 45, 'bob@example.com',    '+31000000002', 'bob',      'x', 1, 1, 8, 'Side St'),
+    (3,  'Carla Gómez',     'F', '1995-12-01', 3, 78, 'carla@example.com',  '+31000000003', 'carla',    'x', 1, 1, 2, 'Park Ave'),
+    (4,  'Daan Kuiper',     'M', '1992-07-11', 4, 56, 'daan@example.com',   '+31000000004', 'daan',     'x', 1, 1, 6, 'Canal Ring'),
+    (5,  'Elena Petrova',   'F', '1984-02-18', 5, 34, 'elena@example.com',  '+31000000005', 'elena',    'x', 1, 1, 11,'Museumplein'),
+    (6,  'Farah Nasser',    'F', '1999-09-09', 6, 21, 'farah@example.com',  '+31000000006', 'farah',    'x', 1, 1, 1, 'Freedom Ave'),
+    (7,  'Giorgio Bianchi', 'M', '1978-12-30', 1, 88, 'giorgio@example.com','+31000000007', 'giorgio',  'x', 1, 1, 15,'Trastevere'),
+    (8,  'Hanna Virtanen',  'F', '1993-04-04', 2, 17, 'hanna@example.com',  '+31000000008', 'hanna',    'x', 1, 1, 3, 'Sauna Rd'),
+    (9,  'Ivan Novak',      'M', '1989-10-27', 3, 63, 'ivan@example.com',   '+31000000009', 'ivan',     'x', 1, 1, 9, 'Old Town'),
+    (10, 'Julia Sanchez',   'F', '2000-01-05', 4, 52, 'julia@example.com',  '+31000000010', 'julia',    'x', 1, 1, 0, 'Marina Blvd'),
+    (11, 'Kaspar Müller',   'M', '1982-08-14', 5, 29, 'kaspar@example.com', '+31000000011', 'kaspar',   'x', 1, 1, 5, 'Allee 5'),
+    (12, 'Lina Papadopoulou','F','1996-11-23', 6, 11, 'lina@example.com',   '+31000000012', 'lina',     'x', 1, 1, 7, 'Blue Bay');
 
 -- Menu items
 INSERT IGNORE INTO menu_items (
@@ -72,4 +87,6 @@ INSERT IGNORE INTO discount_code (code, Discount_Value, is_active, valid_from, v
 VALUES
     ('WELCOME10', 10.00, 1, '2025-01-01', '2025-12-31'),
     ('FREEDRINK', 5.00, 1, '2025-01-01', '2025-06-30'),
-    ('BIRTHDAYBONUS', 15.00, 1, NULL, NULL);
+    ('BIRTHDAYBONUS', 15.00, 1, NULL, NULL),
+    ('LOYALTY15', 15.00, 1, '2025-03-01', '2025-09-30'),
+    ('SPRING5', 5.00, 1, '2025-03-01', '2025-04-30');

@@ -4,6 +4,12 @@ from . import db
 
 class Customer(db.Model):
     __tablename__ = "customers"
+    __table_args__ = (
+        db.CheckConstraint(
+            "Birthdate IS NULL OR Birthdate <= CURRENT_DATE",
+            name="ck_customer_birthdate_not_future",
+        ),
+    )
 
     customer_id = db.Column("Customer_ID", db.Integer, primary_key=True)
     name = db.Column("Name", db.String(100), nullable=False)

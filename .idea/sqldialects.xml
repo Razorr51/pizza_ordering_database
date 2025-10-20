@@ -2,8 +2,10 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/app/integration/sql/seed_min.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/app/integration/sql/seed_orders.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/app/integration/sql/seed_pizzas.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/app/integration/sql/views.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/pizza_ordering.sql" dialect="MySQL" />
     <file url="PROJECT" dialect="MySQL" />
   </component>
 </project>

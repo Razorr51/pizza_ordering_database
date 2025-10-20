@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Optional, Sequence
 
-from sqlalchemy import func
+from sqlalchemy import case, func
 
 from app.integration.models.delivery import DeliveryPerson, DeliveryPersonPostcode
 from app.integration.models.postcode import Postcode
@@ -17,14 +17,20 @@ class DeliveryRepository:
         return (
             DeliveryPerson.query.join(DeliveryPersonPostcode)
             .filter(DeliveryPersonPostcode.postcode_id == postcode_id)
-            .order_by(DeliveryPerson.unavailable_until.asc().nullsfirst())
+            .order_by(
+                case((DeliveryPerson.unavailable_until.is_(None), 0), else_=1),
+                DeliveryPerson.unavailable_until.asc(),
+            )
             .all()
         )
 
     def fallback_drivers(self) -> List[DeliveryPerson]:
         return (
             DeliveryPerson.query
-            .order_by(DeliveryPerson.unavailable_until.asc().nullsfirst())
+            .order_by(
+                case((DeliveryPerson.unavailable_until.is_(None), 0), else_=1),
+                DeliveryPerson.unavailable_until.asc(),
+            )
             .all()
         )
 
