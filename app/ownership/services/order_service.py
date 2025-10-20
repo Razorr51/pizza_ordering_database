@@ -96,6 +96,8 @@ class OrderService:
         total_pizza_count = sum(qty for _, qty in pizza_lines)
         order: Optional[Order] = None
 
+        discount_applied = False
+
         try:
             session = db.session
             with session.begin_nested():
@@ -123,6 +125,9 @@ class OrderService:
                         unit_price=menu_item.base_price or Decimal("0"),
                     )
 
+                # Persist newly added line items so relationship collections are stable
+                self._orders.persist()
+
                 # Birthday freebies (cheapest pizza + drink)
                 self._apply_birthday_rewards(order, customer, requested_at.date())
 
@@ -137,6 +142,7 @@ class OrderService:
                     discount_amount = self._calculate_percentage_discount(order, discount.discount_multiplier())
                     if discount_amount > Decimal("0"):
                         self._apply_explicit_discount_amount(order, discount_amount)
+                        discount_applied = True
 
                 order.recalculate_totals()
 
@@ -155,7 +161,7 @@ class OrderService:
                 # Loyalty tracking: add purchased pizza count
                 customer.pizzas_ordered = (customer.pizzas_ordered or 0) + total_pizza_count
 
-                if discount:
+                if discount and discount_applied:
                     self._discounts.mark_redeemed(discount)
 
                 order.recalculate_totals()

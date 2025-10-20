@@ -8,6 +8,7 @@ class AppConfig:
         self.track_modifications = False
         self.echo = os.environ.get("SQL_ECHO") == "1"
         self.secret_key = self._get_secret_key()
+        self.reset_db_on_startup = os.environ.get("RESET_DB_ON_STARTUP", "0") == "1"
 
     def _get_secret_key(self):
         return os.environ.get("SECRET_KEY", secrets.token_hex(32))

@@ -2,7 +2,7 @@
 
 {% block head_styles %}
   <style>
-    .wrap { max-width: 1080px; margin: 32px auto; padding: 0 16px; }
+    .wrap { max-width: 1080px; margin: 32px auto; padding: 0 16px 180px; }
     h1 { font-size: 32px; margin: 0 0 8px; }
     .sub { color: var(--muted); margin-bottom: 18px; }
     .note { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
@@ -27,9 +27,9 @@
     .qty-inline .qty-badge { min-width: 34px; text-align: center; font-weight: 600; font-size: 15px; }
     .extras-block { margin-top: 12px; }
     .extras-heading { font-size: 18px; margin: 16px 0 10px; }
-    .cart-bar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 24px; display: flex; align-items: center; gap: 16px;
+    .cart-bar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 16px;
                 background: rgba(15,23,42,0.92); border: 1px solid rgba(148,163,184,0.3); border-radius: 999px; padding: 12px 20px;
-                box-shadow: 0 18px 40px rgba(15,23,42,0.45); backdrop-filter: blur(12px); }
+                box-shadow: 0 18px 40px rgba(15,23,42,0.45); backdrop-filter: blur(12px); max-width: calc(100% - 48px); z-index: 1200; }
     .cart-bar button { border: none; border-radius: 999px; padding: 10px 18px; font-weight: 600; cursor: pointer; }
     .cart-bar button.primary { background: linear-gradient(135deg,#22c55e,#3b82f6); color: white; }
     .cart-bar button.secondary { background: rgba(148,163,184,0.15); color: var(--text); }
@@ -41,9 +41,12 @@
     .cart-message.error { color: #f87171; }
     .cart-message.success { color: #34d399; }
     @media (max-width: 640px) {
-      .cart-bar { flex-wrap: wrap; justify-content: center; }
+      .cart-bar { flex-wrap: wrap; justify-content: center; left: 16px; right: 16px; transform: none; bottom: calc(104px + env(safe-area-inset-bottom, 0px)); max-width: none; }
       .code-input { width: 100%; }
       .code-input input { width: 100%; }
+    }
+    @media (min-width: 900px) {
+      .cart-bar { bottom: calc(56px + env(safe-area-inset-bottom, 0px)); }
     }
   </style>
 {% endblock %}
@@ -321,8 +324,18 @@
           return;
         }
         const orderId = data.order_id || data.order?.order_id || 'new';
-        const totalDue = data?.totals && data.totals.total_due !== undefined ? Number(data.totals.total_due) : cartTotal();
-        showMessage(`Order #${orderId} confirmed! Total € ${totalDue.toFixed(2)}. We\'ll use your saved address.`, false, true);
+        const totals = data?.totals || {};
+        const discounts = data?.discounts || {};
+        const totalDue = totals.total_due !== undefined ? Number(totals.total_due) : cartTotal();
+        const discountAmount = totals.discount_total !== undefined ? Number(totals.discount_total) : 0;
+        const discountCode = discounts.discount_code || '';
+        let successMessage = `Order #${orderId} confirmed! Total € ${totalDue.toFixed(2)}. We\'ll use your saved address.`;
+        if(discountAmount > 0){
+          successMessage += ` Discount applied: -€ ${discountAmount.toFixed(2)}${discountCode ? ` (${discountCode})` : ''}.`;
+        } else if(discountCode){
+          successMessage += ` Discount code ${discountCode} was accepted but did not change the total for this order.`;
+        }
+        showMessage(successMessage, false, true);
         basket.pizzas = {};
         basket.drinks = {};
         basket.desserts = {};

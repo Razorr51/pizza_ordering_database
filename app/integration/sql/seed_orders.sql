@@ -84,28 +84,8 @@ INSERT IGNORE INTO order_items (
     (37,20, 'pizza',   2, NULL, 'Pepperoni', 1, 3.05, 0.00),
     (38,20, 'drink',  NULL, 1, 'Cola',       1, 2.50, 2.50);
 
--- Reflect redeemed discount codes in the seed data.
+-- Keep discount codes active until consumed by a live order.
 UPDATE discount_code
-SET is_active = 0,
-    redeemed_at = '2025-02-20 19:20:00'
-WHERE code = 'WELCOME10';
-
-UPDATE discount_code
-SET is_active = 0,
-    redeemed_at = '2025-03-11 20:10:00'
-WHERE code = 'LOYALTY15';
-
-UPDATE discount_code
-SET is_active = 0,
-    redeemed_at = '2025-03-17 20:30:00'
-WHERE code = 'BIRTHDAYBONUS';
-
-UPDATE discount_code
-SET is_active = 0,
-    redeemed_at = '2025-03-18 19:00:00'
-WHERE code = 'SPRING5';
-
-UPDATE discount_code
-SET is_active = 0,
-    redeemed_at = '2025-03-22 21:15:00'
-WHERE code = 'FREEDRINK';
+SET is_active = 1,
+    redeemed_at = NULL
+WHERE code IN ('WELCOME10', 'LOYALTY15', 'BIRTHDAYBONUS', 'SPRING5', 'FREEDRINK');

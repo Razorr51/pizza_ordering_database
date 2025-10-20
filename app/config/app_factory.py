@@ -30,6 +30,7 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = config.track_modifications
     app.config["SQLALCHEMY_ECHO"] = config.echo
     app.config["SECRET_KEY"] = config.secret_key
+    app.config["RESET_DB_ON_STARTUP"] = config.reset_db_on_startup
 
 
     app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -43,7 +44,7 @@ def create_app():
     with app.app_context():
         db.create_all()
         from app.integration.database_manager import DatabaseManager
-        DatabaseManager(app).setup_schema()
+        DatabaseManager(app).setup_schema(reset=config.reset_db_on_startup)
         from app.integration.models import seed_data
         seed_data()
 

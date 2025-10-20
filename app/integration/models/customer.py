@@ -11,7 +11,7 @@ class Customer(db.Model):
         ),
     )
 
-    customer_id = db.Column("Customer_ID", db.Integer, primary_key=True)
+    customer_id = db.Column("Customer_ID", db.Integer, primary_key=True, autoincrement=True)
     name = db.Column("Name", db.String(100), nullable=False)
     gender = db.Column("Gender", db.String(10))
     birthdate = db.Column("Birthdate", db.Date)

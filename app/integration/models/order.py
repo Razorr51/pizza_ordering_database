@@ -103,12 +103,13 @@ class Order(db.Model):
 
     def recalculate_totals(self) -> None:
         """Recompute totals based on associated line items."""
+        items = list(dict.fromkeys(self.items))
         gross = sum(
-            (item.unit_price * item.quantity for item in self.items),
+            (item.unit_price * item.quantity for item in items),
             Decimal("0.00"),
         )
         discounts = sum(
-            (item.discount_amount for item in self.items),
+            (item.discount_amount for item in items),
             Decimal("0.00"),
         )
         self.total_before_discounts = gross.quantize(Decimal("0.01"))

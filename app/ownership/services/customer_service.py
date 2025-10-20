@@ -64,12 +64,11 @@ class CustomerService:
 
         parsed_birthdate: Optional[date] = None
         if clean_birthdate:
-            try:
-                parsed_birthdate = datetime.strptime(clean_birthdate, "%d-%m-%Y").date()
-                if parsed_birthdate > date.today():
-                    errors["birthdate"] = "Birthdate cannot be in the future."
-            except ValueError:
-                errors["birthdate"] = "Birthdate must be in DD-MM-YYYY format."
+            parsed_birthdate, birthdate_error = self._parse_birthdate(clean_birthdate)
+            if birthdate_error:
+                errors["birthdate"] = birthdate_error
+            elif parsed_birthdate and parsed_birthdate > date.today():
+                errors["birthdate"] = "Birthdate cannot be in the future."
         else:
             errors["birthdate"] = "Birthdate is required."
 
@@ -134,6 +133,16 @@ class CustomerService:
             raise
 
         return customer, {}
+
+    def _parse_birthdate(self, raw_value: str) -> Tuple[Optional[date], Optional[str]]:
+        """Attempt to parse multiple acceptable birthdate formats."""
+        formats = ["%d-%m-%Y", "%Y-%m-%d", "%d/%m/%Y"]
+        for fmt in formats:
+            try:
+                return datetime.strptime(raw_value, fmt).date(), None
+            except ValueError:
+                continue
+        return None, "Birthdate must be in DD-MM-YYYY format."
 
 
 __all__ = ["CustomerService"]
