@@ -23,9 +23,9 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `pizza_ordering` /*!40100 DEFAULT CHARA
 
 USE `pizza_ordering`;
 
---
+
 -- Table structure for table `customers`
---
+
 
 DROP TABLE IF EXISTS `customers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -52,18 +52,18 @@ CREATE TABLE `customers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `customers`
---
+
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Table structure for table `delivery_person`
---
+
 
 DROP TABLE IF EXISTS `delivery_person`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -77,18 +77,18 @@ CREATE TABLE `delivery_person` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `delivery_person`
---
+
 
 LOCK TABLES `delivery_person` WRITE;
 /*!40000 ALTER TABLE `delivery_person` DISABLE KEYS */;
 /*!40000 ALTER TABLE `delivery_person` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Table structure for table `delivery_person_postcode`
---
+
 
 DROP TABLE IF EXISTS `delivery_person_postcode`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -104,18 +104,18 @@ CREATE TABLE `delivery_person_postcode` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `delivery_person_postcode`
---
+
 
 LOCK TABLES `delivery_person_postcode` WRITE;
 /*!40000 ALTER TABLE `delivery_person_postcode` DISABLE KEYS */;
 /*!40000 ALTER TABLE `delivery_person_postcode` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Table structure for table `discount_code`
---
+
 
 DROP TABLE IF EXISTS `discount_code`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -134,18 +134,18 @@ CREATE TABLE `discount_code` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `discount_code`
---
+
 
 LOCK TABLES `discount_code` WRITE;
 /*!40000 ALTER TABLE `discount_code` DISABLE KEYS */;
 /*!40000 ALTER TABLE `discount_code` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Table structure for table `driver_group`
---
+
 
 DROP TABLE IF EXISTS `driver_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -164,18 +164,18 @@ CREATE TABLE `driver_group` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `driver_group`
---
+
 
 LOCK TABLES `driver_group` WRITE;
 /*!40000 ALTER TABLE `driver_group` DISABLE KEYS */;
 /*!40000 ALTER TABLE `driver_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Table structure for table `group`
---
+
 
 DROP TABLE IF EXISTS `group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -191,18 +191,18 @@ CREATE TABLE `group` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `group`
---
+
 
 LOCK TABLES `group` WRITE;
 /*!40000 ALTER TABLE `group` DISABLE KEYS */;
 /*!40000 ALTER TABLE `group` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Table structure for table `ingredients`
---
+
 
 DROP TABLE IF EXISTS `ingredients`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -221,9 +221,9 @@ CREATE TABLE `ingredients` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `ingredients`
---
+
 
 LOCK TABLES `ingredients` WRITE;
 /*!40000 ALTER TABLE `ingredients` DISABLE KEYS */;
@@ -231,9 +231,9 @@ INSERT INTO `ingredients` VALUES (1,'Tomato sauce',0.30,0,0,1),(2,'Mozzarella',0
 /*!40000 ALTER TABLE `ingredients` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Table structure for table `menu_items`
---
+
 
 DROP TABLE IF EXISTS `menu_items`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -253,18 +253,18 @@ CREATE TABLE `menu_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `menu_items`
---
+
 
 LOCK TABLES `menu_items` WRITE;
 /*!40000 ALTER TABLE `menu_items` DISABLE KEYS */;
 /*!40000 ALTER TABLE `menu_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Table structure for table `order_items`
---
+
 
 DROP TABLE IF EXISTS `order_items`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -283,18 +283,18 @@ CREATE TABLE `order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `order_items`
---
+
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Table structure for table `orders`
---
+
 
 DROP TABLE IF EXISTS `orders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -317,18 +317,18 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `orders`
---
+
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Table structure for table `pizza_ingredients`
---
+
 
 DROP TABLE IF EXISTS `pizza_ingredients`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -347,18 +347,18 @@ CREATE TABLE `pizza_ingredients` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `pizza_ingredients`
---
+
 
 LOCK TABLES `pizza_ingredients` WRITE;
 /*!40000 ALTER TABLE `pizza_ingredients` DISABLE KEYS */;
 /*!40000 ALTER TABLE `pizza_ingredients` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
+
 -- Temporary view structure for view `pizza_menu_prices`
---
+
 
 DROP TABLE IF EXISTS `pizza_menu_prices`;
 /*!50001 DROP VIEW IF EXISTS `pizza_menu_prices`*/;
@@ -372,9 +372,9 @@ SET @saved_cs_client     = @@character_set_client;
  1 AS `pizza_isvegetarian`*/;
 SET character_set_client = @saved_cs_client;
 
---
+
 -- Table structure for table `pizzas`
---
+
 
 DROP TABLE IF EXISTS `pizzas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -386,13 +386,13 @@ CREATE TABLE `pizzas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `pizzas`
---
 
---
+-- Dumping data for table `pizzas`
+
+
+
 -- Table structure for table `postcode`
---
+
 
 DROP TABLE IF EXISTS `postcode`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -408,31 +408,30 @@ CREATE TABLE `postcode` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
+
 -- Dumping data for table `postcode`
---
 
 LOCK TABLES `postcode` WRITE;
 /*!40000 ALTER TABLE `postcode` DISABLE KEYS */;
 /*!40000 ALTER TABLE `postcode` ENABLE KEYS */;
 UNLOCK TABLES;
---
+
 -- Dumping events for database 'pizza_ordering'
---
 
---
+
+
 -- Dumping routines for database 'pizza_ordering'
---
 
---
+
+
 -- Current Database: `pizza_ordering`
 --
 
 USE `pizza_ordering`;
 
---
+
 -- Final view structure for view `pizza_menu_prices`
---
+
 
 /*!50001 DROP VIEW IF EXISTS `pizza_menu_prices`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;

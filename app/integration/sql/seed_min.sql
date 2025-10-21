@@ -1,5 +1,5 @@
 
--- 1) INGREDIENTS
+-- INGREDIENTS
 INSERT IGNORE INTO ingredients (name, cost, is_meat, is_dairy, is_vegan) VALUES
  ('Tomato sauce', 0.30, 0, 0, 1),
  ('Mozzarella',   0.80, 0, 1, 0),
