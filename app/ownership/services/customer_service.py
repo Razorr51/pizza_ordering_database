@@ -13,12 +13,15 @@ from app.integration.models.customer import Customer
 
 
 class CustomerService:
+    """Handle customer-related business logic and validation."""
 
     def __init__(self, repository: Optional[CustomerRepository] = None) -> None:
+        """Initialize repositories used for customer operations."""
         self._repository = repository or CustomerRepository()
         self._postcode_repository = PostcodeRepository()
 
     def list_customers(self) -> List[Dict[str, object]]:
+        """Return a list of customer data for display."""
         customers = self._repository.get_all()
         return [
             {"id": customer.customer_id, "username": customer.username, "name": customer.name}
@@ -49,6 +52,7 @@ class CustomerService:
         postcode: str,
         birthdate: str,
     ) -> Tuple[Optional[Customer], Dict[str, str]]:
+        """Validate input fields, create a customer, and return errors if any."""
         errors: Dict[str, str] = {}
 
         clean_name = (name or "").strip()

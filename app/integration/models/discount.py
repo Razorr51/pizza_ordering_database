@@ -31,10 +31,12 @@ class DiscountCode(db.Model):
     redeemed_at: Mapped[datetime | None] = mapped_column(db.DateTime, nullable=True)
 
     def mark_redeemed(self) -> None:
+        """Flag discount code as used and store the redemption timestamp."""
         self.redeemed_at = datetime.utcnow()
         self.is_active = False
 
     def is_valid_today(self, today: date | None = None) -> bool:
+        """Return True if the code can be redeemed given the date."""
         today = today or date.today()
         if not self.is_active:
             return False

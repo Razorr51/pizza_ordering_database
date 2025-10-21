@@ -8,13 +8,17 @@ from app.ownership.entities.menu import MenuSections
 
 
 class MenuService:
+    """Coordinate retrieval and formatting of menu data."""
+
     def __init__(self, repository: Optional[MenuRepository] = None) -> None:
         self._repository = repository or MenuRepository()
 
     def menu_overview(self) -> List[Dict[str, object]]:
+        """Return a summarized pizza menu."""
         return self._repository.fetch_menu_overview()
 
     def build_sections(self) -> MenuSections:
+        """Return pizzas and grouped extras for the menu template."""
         pizzas = self._repository.fetch_pizza_details()
         extras = self._repository.fetch_active_menu_items()
 

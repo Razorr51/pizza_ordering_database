@@ -11,12 +11,15 @@ class ReportingService:
     """Aggregates staff-facing metrics from reporting repository."""
 
     def __init__(self, repository: Optional[ReportingRepository] = None) -> None:
+        """Inject an optional repository dependency."""
         self._repository = repository or ReportingRepository()
 
     def undelivered_orders(self) -> List[Dict[str, object]]:
+        """Return outstanding orders that need delivery"""
         return self._repository.fetch_undelivered_orders()
 
     def top_pizzas_last_month(self, limit: int = 3) -> List[Dict[str, object]]:
+        """Return the top-selling pizzas."""
         safe_limit = max(1, min(limit, 10))
         return self._repository.fetch_top_pizzas_last_month(limit=safe_limit)
 
@@ -26,6 +29,7 @@ class ReportingService:
         year: Optional[int] = None,
         month: Optional[int] = None,
     ) -> Dict[str, List[Dict[str, object]]]:
+        """Summarize earnings metrics for staff dashboards."""
         year, month = self._normalize_period(year, month)
         return {
             "period": {"year": year, "month": month},

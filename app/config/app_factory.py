@@ -1,8 +1,11 @@
+"""Flask application factory"""
+
 from flask import Flask, redirect, render_template, session, url_for
 from pathlib import Path
 from app.config.app_config import AppConfig
 
 def _register_blueprints(app):
+    """Attach all presentation-layer BPs to the Flask app."""
     from app.presentation.controllers.auth import auth_bp
     from app.presentation.controllers.customers import customers_bp
     from app.presentation.controllers.menu import menu_bp
@@ -15,6 +18,7 @@ def _register_blueprints(app):
     app.register_blueprint(reports_bp)
 
 def create_app():
+    """Configure and return Flask application"""
     base_app_dir  = Path(__file__).resolve().parents[1]
     templates_dir = base_app_dir / "templates"
     static_dir    = base_app_dir / "static"
@@ -52,6 +56,7 @@ def create_app():
 
     @app.route("/")
     def index():
+        """Redirect users to the menu or show the landing page."""
         if session.get("customer_id"):
             return redirect(url_for("menu.get_menu_html"))
         return render_template("auth/landing.html")

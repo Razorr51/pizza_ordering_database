@@ -15,6 +15,7 @@ _service = OrderService()
 
 @orders_bp.post("/")
 def create_order():
+    """Process an order submission and return the order summary."""
     payload = request.get_json(silent=True) or {}
     customer_id = session.get("customer_id") or payload.get("customer_id")
     if not customer_id:
@@ -82,6 +83,7 @@ def _serialize_order(order: Order) -> dict:
 
 
 def _serialize_item(item: OrderItem) -> dict:
+    """Convert an order line item into JSON-friendly values."""
     return {
         "item_type": item.item_type,
         "description": item.description,
@@ -93,6 +95,7 @@ def _serialize_item(item: OrderItem) -> dict:
 
 
 def _decimal_to_float(value: Decimal | None) -> float | None:
+    """Convert Decimal values to floats while keeping ``None`` intact."""
     if value is None:
         return None
     return float(value)

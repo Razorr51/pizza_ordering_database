@@ -50,6 +50,7 @@ class MenuRepository:
 
     @staticmethod
     def _serialize_menu_overview(price: PizzaMenuPrice) -> Dict[str, object]:
+        """Convert a pizza menu price row into a mapping."""
         return {
             "pizza_id": price.pizza_id,
             "pizza_name": price.pizza_name,
@@ -60,6 +61,7 @@ class MenuRepository:
 
     @staticmethod
     def _serialize_pizza_detail(pizza: Pizza) -> Dict[str, object]:
+        """Produce a record combining price and ingredient information."""
         price = pizza.menu_price
         ingredient_names = sorted(
             {
@@ -79,6 +81,7 @@ class MenuRepository:
 
     @staticmethod
     def _serialize_menu_item(item: MenuItem) -> Dict[str, object]:
+        """Normalize non-pizza items."""
         return {
             "item_id": item.item_id,
             "name": item.name,
@@ -90,6 +93,7 @@ class MenuRepository:
 
     @staticmethod
     def _decimal_to_float(value: Decimal | None) -> float | None:
+        """Convert Decimal values to floats while preserving ``None``."""
         if value is None:
             return None
         return float(value)

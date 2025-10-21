@@ -1,4 +1,5 @@
-# app/integration/models/__init__.py
+"""Shared SQLAlchemy models and seeding utilities."""
+
 from datetime import date
 
 from flask_sqlalchemy import SQLAlchemy
@@ -28,7 +29,7 @@ def _ensure_postcode(code: str, preferred_id: int) -> int:
 
 
 def seed_data():
-    """Populate a few friendly example customers for local development."""
+    """Example Customers"""
     from .customer import Customer
 
     if Customer.query.first():

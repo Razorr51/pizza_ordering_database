@@ -1,3 +1,5 @@
+"""Utility class for the database."""
+
 from pathlib import Path
 
 from sqlalchemy import inspect, text
@@ -6,11 +8,15 @@ from sqlalchemy.exc import OperationalError
 from app.integration.models import db
 
 class DatabaseManager:
+    """Coordinate schema preparation and compatibility tasks"""
+
     def __init__(self, app):
+        """Store Flask app reference and detect SQLite usage."""
         self.app = app
         self._using_sqlite = str(app.config.get("SQLALCHEMY_DATABASE_URI", "")).startswith("sqlite")
 
     def execute_sql_file(self, path):
+        """Run SQL statements contained in the given file."""
         with open(path, "r", encoding="utf-8") as f:
             sql_script = f.read()
         for stmt in [s.strip() for s in sql_script.split(";") if s.strip()]:
@@ -19,6 +25,7 @@ class DatabaseManager:
         db.session.commit()
 
     def setup_schema(self, *, reset: bool = True):
+        """Ensure correct inputs"""
         try:
             config_root = Path(self.app.root_path).resolve()
             sql_dir = config_root.parent / "integration" / "sql"
@@ -49,6 +56,7 @@ class DatabaseManager:
             self._ensure_customer_pk_autoincrement()
 
     def _prepare_statement(self, statement: str) -> str:
+        """Normalize SQL when running against SQLite."""
         if not self._using_sqlite:
             return statement
         return (
@@ -57,6 +65,7 @@ class DatabaseManager:
         )
 
     def _drop_menu_price_table(self) -> None:
+        """Remove compatibility artifacts for the legacy menu price view."""
         try:
             db.session.execute(text("DROP VIEW IF EXISTS pizza_menu_prices"))
             db.session.commit()
@@ -69,6 +78,7 @@ class DatabaseManager:
             db.session.rollback()
 
     def _drop_reporting_views(self) -> None:
+        """Drop reporting views so they can be recreated with up-to-date SQL."""
         inspector = inspect(db.engine)
         existing_views = set(inspector.get_view_names()) if hasattr(inspector, "get_view_names") else set()
 
@@ -91,6 +101,7 @@ class DatabaseManager:
         self._drop_menu_price_table()
 
     def _ensure_order_discount_nullable(self) -> None:
+        """Allow orders with no discount codes."""
         if self._using_sqlite:
             return
         inspector = inspect(db.engine)
@@ -106,6 +117,7 @@ class DatabaseManager:
                 db.session.rollback()
 
     def _ensure_customer_pk_autoincrement(self) -> None:
+        """Check that the customer primary key uses AUTO_INCREMENT."""
         if self._using_sqlite:
             return
         inspector = inspect(db.engine)
@@ -146,6 +158,7 @@ class DatabaseManager:
             db.session.rollback()
 
     def _ensure_discount_code_schema(self) -> None:
+        """Align the discount_code table definition with application expectations."""
         if self._using_sqlite:
             return
         inspector = inspect(db.engine)
@@ -250,6 +263,7 @@ class DatabaseManager:
             db.session.rollback()
 
     def _needs_initial_seed(self) -> bool:
+        """Return True when tables are missing or have no initial data."""
         inspector = inspect(db.engine)
         required_tables = ["pizzas", "menu_items", "orders"]
         for table in required_tables:

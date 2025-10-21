@@ -1,4 +1,4 @@
-
+"""Authentication-related Flask route handlers."""
 from __future__ import annotations
 
 from flask import (
@@ -21,12 +21,14 @@ _service = CustomerService()
 
 @auth_bp.get("/login")
 def login_form():
+    """Render the login form, optionally pre-filling the username."""
     username = request.args.get("username", "")
     return render_template("auth/login.html", form_data={"username": username})
 
 
 @auth_bp.post("/login")
 def login_submit():
+    """Authenticate a customer and redirect to the menu on success."""
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "")
 
@@ -46,11 +48,13 @@ def login_submit():
 
 @auth_bp.get("/signup")
 def signup_form():
+    """Render the customer registration form."""
     return render_template("auth/signup.html", form_data={})
 
 
 @auth_bp.post("/signup")
 def signup_submit():
+    """Validate signup data, create a customer, and handle validation errors."""
     form_data = {
         "name": request.form.get("name", "").strip(),
         "email": request.form.get("email", "").strip(),
@@ -79,6 +83,7 @@ def signup_submit():
 
 @auth_bp.post("/logout")
 def logout():
+    """Clear session state and redirect to the login page."""
     session.pop("customer_id", None)
     session.pop("customer_name", None)
     flash("You have been logged out.", "info")

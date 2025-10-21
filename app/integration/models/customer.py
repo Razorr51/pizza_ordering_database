@@ -1,3 +1,5 @@
+"""SQLAlchemy model for customer records."""
+
 from sqlalchemy.orm import relationship
 
 from . import db
@@ -27,5 +29,7 @@ class Customer(db.Model):
     street_name = db.Column("Street_Name", db.String(255))
 
     orders = relationship("Order", back_populates="customer", lazy="selectin")
+
     def __repr__(self):
+        """Return a debug representation for the customer."""
         return f"<Customer {self.username}>"

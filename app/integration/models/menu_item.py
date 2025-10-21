@@ -28,6 +28,7 @@ class MenuItem(db.Model):
     active: Mapped[bool] = mapped_column(db.Boolean, nullable=False, default=True)
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper
+        """Return a value for logs and debugging."""
         return f"MenuItem(name={self.name!r}, type={self.type!r})"
 
 

@@ -14,6 +14,7 @@ class DeliveryRepository:
     """Query helpers around delivery drivers and their zones."""
 
     def drivers_for_postcode(self, postcode_id: int) -> List[DeliveryPerson]:
+        """Return drivers associated with the provided postcode."""
         return (
             DeliveryPerson.query.join(DeliveryPersonPostcode)
             .filter(DeliveryPersonPostcode.postcode_id == postcode_id)
@@ -25,6 +26,7 @@ class DeliveryRepository:
         )
 
     def fallback_drivers(self) -> List[DeliveryPerson]:
+        """Return all drivers ordered by their availability timestamp."""
         return (
             DeliveryPerson.query
             .order_by(
@@ -39,6 +41,7 @@ class DeliveryRepository:
         postcode_id: int,
         reference_time: Optional[datetime] = None,
     ) -> Optional[DeliveryPerson]:
+        """Choose the first available driver for a postcode at the given time."""
         reference_time = reference_time or datetime.utcnow()
         candidates: Sequence[DeliveryPerson] = self.drivers_for_postcode(postcode_id)
         if not candidates:
@@ -49,6 +52,7 @@ class DeliveryRepository:
         return None
 
     def assign_driver_to_postcode(self, driver_id: int, postcode_id: int) -> None:
+        """Create an association between a driver and a postcode if missing."""
         existing = (
             DeliveryPersonPostcode.query.filter_by(
                 delivery_driver_id=driver_id,
@@ -66,6 +70,7 @@ class DeliveryRepository:
         db.session.add(link)
 
     def all_postcodes(self) -> List[Postcode]:
+        """Return every postcode sorted by its identifier."""
         return Postcode.query.order_by(Postcode.postcode_id).all()
 
 

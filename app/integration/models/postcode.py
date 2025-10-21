@@ -21,6 +21,7 @@ class Postcode(db.Model):
     )
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper
+        """Return the postcode."""
         return f"Postcode(code={self.postcode!r})"
 
 

@@ -14,6 +14,7 @@ class DiscountRepository:
     """Contains common lookup operations for discount codes."""
 
     def find_active_by_code(self, code: str, *, on_date: date | None = None) -> Optional[DiscountCode]:
+        """Return a discount code when it exists and is valid on given date."""
         if not code:
             return None
         on_date = on_date or date.today()
@@ -28,10 +29,12 @@ class DiscountRepository:
         return None
 
     def mark_redeemed(self, discount: DiscountCode) -> None:
+        """Mark the supplied discount code as redeemed within the session."""
         discount.mark_redeemed()
         db.session.add(discount)
 
     def ensure_code(self, *, code: str, value: float, active: bool = True) -> DiscountCode:
+        """Fetch an existing code or create it with the given attributes."""
         normalized = code.strip().lower()
         record = (
             DiscountCode.query

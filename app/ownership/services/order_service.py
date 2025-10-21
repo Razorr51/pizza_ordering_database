@@ -20,6 +20,8 @@ from app.integration.repositories.order_repository import OrderRepository
 
 @dataclass
 class OrderRequestItem:
+    """Normalized representation of an incoming order item request."""
+
     item_id: int
     quantity: int
 
@@ -43,6 +45,7 @@ class OrderService:
         discount_repository: Optional[DiscountRepository] = None,
         delivery_repository: Optional[DeliveryRepository] = None,
     ) -> None:
+        """Store repository collaborators."""
         self._orders = order_repository or OrderRepository()
         self._customers = customer_repository or CustomerRepository()
         self._discounts = discount_repository or DiscountRepository()
@@ -59,6 +62,7 @@ class OrderService:
         notes: Optional[str] = None,
         requested_at: Optional[datetime] = None,
     ) -> Tuple[Optional[Order], Dict[str, str]]:
+        """Validate request data, build the order, and record any errors."""
         errors: Dict[str, str] = {}
 
         customer = self._customers.get_by_id(customer_id)
@@ -191,6 +195,7 @@ class OrderService:
         self,
         raw_items: Iterable[Dict[str, object]],
     ) -> List[OrderRequestItem]:
+        """Filter raw item inputs into structured entries."""
         normalized: List[OrderRequestItem] = []
         for entry in raw_items:
             if not isinstance(entry, dict):
@@ -211,6 +216,7 @@ class OrderService:
         self,
         requests: Iterable[OrderRequestItem],
     ) -> Tuple[List[Tuple["Pizza", int]], Dict[str, str]]:
+        """Resolve pizzas and collect quantity pairs, noting missing items."""
         from app.integration.models.pizza import Pizza
 
         lines: List[Tuple[Pizza, int]] = []
@@ -230,6 +236,7 @@ class OrderService:
         *,
         expected_type: str,
     ) -> Tuple[List[Tuple["MenuItem", int]], Dict[str, str]]:
+        """Resolve drink or dessert items, ensuring they match the expected type."""
         from app.integration.models.menu_item import MenuItem
 
         errors: Dict[str, str] = {}
@@ -254,6 +261,7 @@ class OrderService:
         return lines, errors
 
     def _apply_birthday_rewards(self, order: Order, customer: Customer, today: date) -> None:
+        """Apply birthday discount to qualifying pizza and drink items."""
         birthdate = customer.birthdate
         if not birthdate or (birthdate.month, birthdate.day) != (today.month, today.day):
             return
@@ -272,6 +280,7 @@ class OrderService:
             order.birthday_drink_applied = True
 
     def _apply_order_level_discount(self, order: Order, percentage: Decimal) -> None:
+        """Distribute a percentage discount across line items."""
         gross = sum((item.unit_price * item.quantity for item in order.items), Decimal("0"))
         existing_discounts = sum((item.discount_amount for item in order.items), Decimal("0"))
         base = gross - existing_discounts
@@ -283,6 +292,7 @@ class OrderService:
         self._apply_explicit_discount_amount(order, amount)
 
     def _calculate_percentage_discount(self, order: Order, percentage: Decimal) -> Decimal:
+        """Return the value (in eur) represented by the percentage discount."""
         gross = sum((item.unit_price * item.quantity for item in order.items), Decimal("0"))
         existing_discounts = sum((item.discount_amount for item in order.items), Decimal("0"))
         base = gross - existing_discounts
@@ -291,6 +301,7 @@ class OrderService:
         return (base * percentage).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     def _apply_explicit_discount_amount(self, order: Order, amount: Decimal) -> None:
+        
         remaining = amount
         for item in sorted(
             order.items,

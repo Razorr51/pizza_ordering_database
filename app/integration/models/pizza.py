@@ -33,6 +33,7 @@ class Pizza(db.Model):
     )
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper
+        """Return pizza name for debugging."""
         return f"Pizza(name={self.pizza_name!r})"
 
 
@@ -67,6 +68,7 @@ class PizzaIngredient(db.Model):
     )
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper
+        """Return identifiers that link pizzas and ingredients."""
         return f"PizzaIngredient(pizza_id={self.pizza_id}, ingredient_id={self.ingredient_id})"
 
 
@@ -91,6 +93,7 @@ class PizzaMenuPrice(db.Model):
     )
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper
+        """Return a summary of the menu price view entry."""
         return f"PizzaMenuPrice(pizza_id={self.pizza_id}, price={self.calculated_price})"
 
 

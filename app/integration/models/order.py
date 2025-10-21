@@ -117,6 +117,7 @@ class Order(db.Model):
         self.total_due = (gross - discounts).quantize(Decimal("0.01"))
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper
+        """Return order identifiers for debugging."""
         return f"Order(id={self.order_id}, customer_id={self.customer_id}, total={self.total_due})"
 
 
@@ -167,15 +168,18 @@ class OrderItem(db.Model):
 
     @property
     def extended_price(self) -> Decimal:
+        """Return the line total after quantity and discounts."""
         return (self.unit_price * self.quantity) - self.discount_amount
 
     def apply_discount(self, amount: Decimal) -> None:
+        """Apply up to ``amount`` off the line without exceeding its value."""
         if amount <= 0:
             return
         max_discount = self.unit_price * self.quantity
         self.discount_amount = min(max_discount, self.discount_amount + amount)
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper
+        """Return a view of the order item for debugging."""
         return f"OrderItem(type={self.item_type!r}, qty={self.quantity}, unit={self.unit_price})"
 
 

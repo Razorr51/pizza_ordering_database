@@ -1,4 +1,4 @@
-# app/presentation/controllers/menu.py
+"""Menu presentation endpoints."""
 from pathlib import Path
 
 from flask import Blueprint, jsonify, render_template, current_app, render_template_string
@@ -18,10 +18,12 @@ _service = MenuService()
 
 @menu_bp.get("/")
 def get_menu_json():
+    """Return the menu as JSON for API consumers."""
     return jsonify(_service.menu_overview())
 
 @menu_bp.get("/html")
 def get_menu_html():
+    """Render the menu page with pizzas and categorized extras."""
     # for debugging
     current_app.logger.info(f"Jinja search paths: {current_app.jinja_loader.searchpath}")
     current_app.logger.info(f"Menu blueprint template_folder: {TEMPLATES_DIR}")

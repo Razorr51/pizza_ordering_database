@@ -15,6 +15,7 @@ _service = ReportingService()
 
 @reports_bp.get("/")
 def dashboard():
+    """Render the staff dashboard with reporting data."""
     year = request.args.get("year", type=int)
     month = request.args.get("month", type=int)
 
@@ -32,12 +33,14 @@ def dashboard():
 
 @reports_bp.get("/undelivered")
 def undelivered_orders():
+    """Return outstanding orders in JSON form."""
     orders = _service.undelivered_orders()
     return jsonify({"orders": _convert_list(orders)})
 
 
 @reports_bp.get("/top-pizzas")
 def top_pizzas():
+    """Return the most popular pizzas from last month."""
     limit = request.args.get("limit", default=3, type=int)
     pizzas = _service.top_pizzas_last_month(limit=limit)
     return jsonify({"pizzas": _convert_list(pizzas)})
@@ -45,6 +48,7 @@ def top_pizzas():
 
 @reports_bp.get("/earnings")
 def earnings():
+    """Return earnings breakdowns by demographic and postal code."""
     year = request.args.get("year", type=int)
     month = request.args.get("month", type=int)
     data = _service.monthly_earnings(year=year, month=month)
@@ -68,6 +72,7 @@ def _convert_nested(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _convert_value(value: Any) -> Any:
+    """Convert Decimal instances to floats while leaving other values untouched."""
     if isinstance(value, Decimal):
         return float(value)
     return value

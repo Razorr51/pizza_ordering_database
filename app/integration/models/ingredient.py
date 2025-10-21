@@ -30,6 +30,7 @@ class Ingredient(db.Model):
     )
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper
+        """Return a representation for debugging."""
         return f"Ingredient(name={self.name!r})"
 
 
